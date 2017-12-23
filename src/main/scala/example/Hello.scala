@@ -1,9 +1,9 @@
 package example
 
-object Hello extends Greeting with App {
-  println(greeting)
-}
+object Hello extends App {
 
-trait Greeting {
-  lazy val greeting: String = "hello"
+  def hello(name: String) = s"Hello, $name!"
+
+  println(hello("Scala"))
+
 }

@@ -1,12 +1,13 @@
-import Dependencies._
+name := "Scala Hello World Demo"
 
-lazy val root = (project in file(".")).
-  settings(
-    inThisBuild(List(
-      organization := "com.example",
-      scalaVersion := "2.12.3",
-      version      := "0.1.0-SNAPSHOT"
-    )),
-    name := "Hello",
-    libraryDependencies += scalaTest % Test
-  )
+version := "0.1"
+
+organization := "org.my"
+
+scalaVersion := "2.12.4"
+
+sbtVersion := "1.0.4"
+
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+)
