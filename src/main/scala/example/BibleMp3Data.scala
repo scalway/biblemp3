@@ -1,5 +1,7 @@
 package example
 
+import example.model.BibleFile
+
 object BibleMp3Data {
   val OT = Seq(
     BibleFile("http://biblia-mp3.pl/Ksiega_Rodzaju.mp3", "Księga Rodzaju", "Rdz", "cała", "cała", "3:31:27", "Historyczne"),
