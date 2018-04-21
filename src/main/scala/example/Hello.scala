@@ -1,32 +1,36 @@
 package example
 
 import org.scalajs.dom
-import dom.document
-import org.scalajs.jquery.jQuery
+import org.scalajs.dom.html.{Div, Heading}
+
+import scalatags.JsDom.all._
+
+case class BibleFile(
+  url:String,
+  book:String,
+  shortBook:String,
+  version:String,
+  versionPartName:String,
+  name:String,
+  bookKind:String
+)
+
 
 object Hello {
 
-  def hello(name: String) = s"Hello, $name!"
-
   def main(args: Array[String]): Unit = {
-    println(hello("Scala in console"))
-    jQuery(() => setupUI())
+    dom.document.body.innerHTML = ""
+    dom.document.body.appendChild(view)
+    dom.window.setTimeout(() => {
+      header.style.color = "pink"
+    }, 2200)
   }
 
-  def appendPar(targetNode: dom.Node, text: String): Unit = {
-    val parNode = document.createElement("p")
-    val textNode = document.createTextNode(text)
-    parNode.appendChild(textNode)
-    targetNode.appendChild(parNode)
-  }
+  val header: Heading = h1("hello world").render
 
-  def addClickedMessage(): Unit = {
-    jQuery("body").append("<p>You clicked the button!</p>")
-  }
-
-  def setupUI(): Unit = {
-    jQuery("#click-me-button").click(() => addClickedMessage())
-    jQuery("body").append(s"<p>${hello("Scala in page")}</p>")
-  }
+  val view: Div = div(
+    header,
+    p("cześć", color := "red")
+  ).render
 
 }
