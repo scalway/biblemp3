@@ -2,16 +2,29 @@ div.chapter {
     border-bottom: solid 1px #d6d6d6;
 }
 
-.shortIcon {
-    float: left;
-    width: 10%;
+.bookHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
-.icon {
+.shortIcon {
+    float: left;
     background-color: red;
     padding: 4px;
-    text-align: center;
     border-radius: 5px;
+    width: 4em;
+    height: 4em;
+    margin-right: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.4em;
+}
+
+.innerIcon {
+
     display: inline-block;
 }
 
@@ -19,6 +32,20 @@ p.shortBook {
     color: white;
     font-weight: 700;
     margin: 0 0;
+}
+
+.bookName {
+    width: 100%;
+}
+
+p.bookNameText {
+    margin: 0 0;
+    float: left;
+    font-size: 17px;
+}
+
+.bookHeader {
+    border-bottom: solid 1px #d6d6d6;
 }
 
 button.btnPlay {

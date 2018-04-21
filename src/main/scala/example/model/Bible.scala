@@ -2,15 +2,15 @@ package example.model
 import example.BibleMp3Data
 
 case class Bible(nt:BibleTestament, ot:BibleTestament) {
-  def all = BibleTestament(ot.files ++ nt.files)
+  def all = BibleTestament("", ot.files ++ nt.files)
 }
 
 object Bible extends Bible(
-  BibleTestament(BibleMp3Data.OT),
-  BibleTestament(BibleMp3Data.NT)
+  BibleTestament("Stary Testament", BibleMp3Data.OT),
+  BibleTestament("Nowy Testament", BibleMp3Data.NT)
 )
 
-case class BibleTestament(files:Seq[BibleFile]) {
+case class BibleTestament(name:String, files:Seq[BibleFile]) {
   def books:Seq[Book] = files.groupBy(_.shortBook).map {
     case (n, f) =>
       val head = f.head
