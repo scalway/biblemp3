@@ -1,36 +1,39 @@
 package example.model
 import example.BibleMp3Data
 
-case class Bible(nt:BibleT, ot:BibleT) {
-  def all = BibleT(ot.files ++ nt.files)
+case class Bible(nt:BibleTestament, ot:BibleTestament) {
+  def all = BibleTestament(ot.files ++ nt.files)
 }
 
 object Bible extends Bible(
-  BibleT(BibleMp3Data.OT),
-  BibleT(BibleMp3Data.NT)
+  BibleTestament(BibleMp3Data.OT),
+  BibleTestament(BibleMp3Data.NT)
 )
 
-case class BibleT(files:Seq[BibleFile]) {
-  def books:Seq[Book] = files.groupBy(_.shortBook).map{
-    case (n, files) =>
-      val head = files.head
+case class BibleTestament(files:Seq[BibleFile]) {
+  def books:Seq[Book] = files.groupBy(_.shortBook).map {
+    case (n, f) =>
+      val head = f.head
       Book(head.book, head.shortBook, files)
   }.toSeq
 }
 
 case class Book(name:String, short:String, files:Seq[BibleFile]) {
-  def parts: Map[String, Seq[BibleFile]] = {
-    val res = files.groupBy(_.version)
+  def getVersion: Map[String, Seq[BibleFile]] = {
+    val res = files.groupBy(s => s.version)
     res.withDefault(c => res("cała"))
   }
+
+  def fullVersion = getVersion("cała")
+  def partedVersion = getVersion("podzielona")
 }
 
 case class BibleFile(
-  url:String,
-  book:String,
-  shortBook:String,
-  version:String,
-  versionPartName:String,
-  name:String,
-  bookKind:String
-)
+                      url:String,
+                      book:String,
+                      shortBook:String,
+                      version:String,
+                      versionPartName:String,
+                      name:String,
+                      bookKind:String
+                    )

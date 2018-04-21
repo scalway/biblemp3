@@ -1,9 +1,10 @@
 package example
 
-import example.model.BibleFile
+import example.model.{Bible, BibleFile}
 import example.views.BibleViews
 import org.scalajs.dom
 import org.scalajs.dom.html.{Div, Heading}
+import org.scalajs.jquery.jQuery
 import scalatags.JsDom.all._
 
 object Hello {
@@ -11,6 +12,7 @@ object Hello {
   def main(args: Array[String]): Unit = {
     dom.document.body.innerHTML = ""
     dom.document.body.appendChild(view)
+    jQuery
     dom.window.setTimeout(() => {
       header.style.color = "pink"
     }, 2200)
@@ -20,7 +22,7 @@ object Hello {
 
   val view: Div = div(
     header,
-    BibleMp3Data.NT.map(BibleViews.bibleFile),
+    Bible.nt.books.map(BibleViews.book),
     footer
   ).render
 }
