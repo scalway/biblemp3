@@ -11,10 +11,9 @@ case class BibleFile(
   shortBook:String,
   version:String,
   versionPartName:String,
-  name:String,
+  duration:String,
   bookKind:String
 )
-
 
 object Hello {
 
@@ -30,7 +29,17 @@ object Hello {
 
   val view: Div = div(
     header,
-    p("cześć", color := "red")
+    BibleMp3Data.NT.map(item),
+    footer
   ).render
 
+  def item(b: BibleFile): Div = {
+    div(cls :="bookPosition",
+      div(cls := "shortIcon", p(b.shortBook, cls := "shortBook")),
+      p(b.book, cls := "book"),
+      button(cls := "btnPlay", i(cls := "fa fa-play")),
+      p(b.duration, cls := "duration"),
+      p("", clear := "both", margin := "0 0")
+    ).render
+  }
 }
