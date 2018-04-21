@@ -20,7 +20,18 @@ object BibleViews {
   }
 
   def bibleTestament(b:BibleTestament) = {
-
+    val bid = b.name.hashCode
+    val header = div(
+      data.toggle := "collapse",
+      data.target := "#" + bid,
+      cls := "testamentHeader",
+      p(b.name, cls := "testamentHeaderText")
+    ).render
+    val content = div(
+      id := bid,
+      cls := "collapse",
+      b.books.map(book)
+    ).render
   }
 
   def book(b:Book): JsDom.TypedTag[Div] = {
@@ -35,11 +46,10 @@ object BibleViews {
       data.target := "#" + cid,
       cls := "bookHeader",
       div(cls := "shortIcon",
-        div(cls := "icon",
           p(b.short, cls := "shortBook")
-        )
       ),
-      p(b.name, cls := "bookName")
+      div(cls := "bookName", p(b.name, cls := "bookNameText")),
+      div(clear := "both")
     ).render
 
     div(header, chapters, p("", clear := "both", margin := "0 0"))
