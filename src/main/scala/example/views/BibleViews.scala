@@ -3,7 +3,7 @@ package example.views
 import example.AudioPlayer
 import example.model.{BibleFile, BibleTestament, Book}
 import org.scalajs.dom.html.Div
-
+import example.utils.Implicits._
 import scalatags.JsDom
 import scalatags.JsDom.all._
 import org.scalajs.jquery.jQuery
@@ -13,8 +13,12 @@ object BibleViews {
 }
 
 
-class BibleTestamentView(b:BibleTestament) {
-  val booksViews = b.books.map(s => new BookView(s))
+class BibleTestamentView(b:BibleTestament, colors:Seq[String]) {
+  val colorMapping =
+    b.books.groupByOrdered(_.group).map(_._1).zip(colors).toMap
+    .withDefaultValue("gray")
+
+  val booksViews = b.books.map(s => new BookView(s, colorMapping(s.group)))
 
   val view: Div = {
     val bid = b.name.hashCode
@@ -22,8 +26,10 @@ class BibleTestamentView(b:BibleTestament) {
     val header = div(
       data.toggle := "collapse",
       data.target := "#" + bid,
-      cls := "testamentHeader",
-      p(b.name, cls := "testamentHeaderText")
+      cls := "testamentHeader collapsed",
+      div(cls := "testamentHeaderTextContainer",
+        p(b.name, cls := "testamentHeaderText")
+      )
     ).render
 
     val content = div(
@@ -36,7 +42,7 @@ class BibleTestamentView(b:BibleTestament) {
   }
 }
 
-class BookView(b:Book) {
+case class BookView(b:Book, color:String) {
   val fileViews = b.files.map(s => new BibleFileView(s))
 
   val view: JsDom.TypedTag[Div] = {
@@ -50,8 +56,8 @@ class BookView(b:Book) {
     val header = div(
       data.toggle := "collapse",
       data.target := "#" + cid,
-      cls := "bookHeader",
-      div(cls := "shortIcon",
+      cls := "bookHeader collapsed",
+      div(cls := "shortIcon", backgroundColor := color,
         p(b.short, cls := "shortBook")
       ),
       div(cls := "bookName", p(b.name, cls := "bookNameText")),
