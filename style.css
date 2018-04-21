@@ -29,9 +29,11 @@ button.btnPlay {
 p.book {
     float: left;
     width: 250px;
+    margin: 0 0;
 }
 
 p.duration {
     float: right;
+    margin: 0 0;
 }
 

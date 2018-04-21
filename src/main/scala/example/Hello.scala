@@ -1,6 +1,7 @@
 package example
 
 import example.model.BibleFile
+import example.views.BibleViews
 import org.scalajs.dom
 import org.scalajs.dom.html.{Div, Heading}
 import scalatags.JsDom.all._
@@ -19,17 +20,7 @@ object Hello {
 
   val view: Div = div(
     header,
-    BibleMp3Data.NT.map(item),
+    BibleMp3Data.NT.map(BibleViews.bibleFile),
     footer
   ).render
-
-  def item(b: BibleFile): Div = {
-    div(cls :="bookPosition",
-      div(cls := "shortIcon", p(b.shortBook, cls := "shortBook")),
-      p(b.book, cls := "book"),
-      button(cls := "btnPlay", i(cls := "fa fa-play")),
-      p(b.name, cls := "duration"),
-      p("", clear := "both", margin := "0 0")
-    ).render
-  }
 }
