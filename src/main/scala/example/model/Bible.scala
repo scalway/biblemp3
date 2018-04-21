@@ -1,5 +1,6 @@
 package example.model
 import example.BibleMp3Data
+import example.utils.Implicits._
 
 case class Bible(nt:BibleTestament, ot:BibleTestament) {
   def all = BibleTestament("", ot.files ++ nt.files)
@@ -11,14 +12,14 @@ object Bible extends Bible(
 )
 
 case class BibleTestament(name:String, files:Seq[BibleFile]) {
-  def books:Seq[Book] = files.groupBy(_.shortBook).map {
+  val books:Seq[Book] = files.groupByOrdered(_.shortBook).map {
     case (n, f) =>
       val head = f.head
-      Book(head.book, head.shortBook, f)
+      Book(head.book, head.shortBook, head.bookKind, f.toSeq)
   }.toSeq
 }
 
-case class Book(name:String, short:String, files:Seq[BibleFile]) {
+case class Book(name:String, short:String, group:String , files:Seq[BibleFile]) {
   def getVersion: Map[String, Seq[BibleFile]] = {
     val res = files.groupBy(s => s.version)
     res.withDefault(c => res("cała"))

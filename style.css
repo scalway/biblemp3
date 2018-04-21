@@ -1,5 +1,28 @@
+.testamentHeaderTextContainer {
+    width: 100%;
+}
+
+.testamentHeaderTextContainer:after {
+    float: right;
+    font-family: 'Glyphicons Halflings';
+    content: "\e114";
+    float: right;
+    color: grey;
+    margin-right: 0.5em;
+}
+
+.collapsed .testamentHeaderTextContainer:after {
+    float: right;
+    font-family: 'Glyphicons Halflings';
+    content: "\e080";
+    float: right;
+    color: grey;
+    margin-right: 0.5em;
+}
+
 .testamentHeader {
-    background-color: #419dcc;
+    transition: background-color 0.5s ease;
+    background-color: #1b6184;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7,16 +30,30 @@
     padding: 1em;
 }
 
+.testamentHeader:hover,.testamentHeader.collapsed:hover {
+    background-color: #2f7498;
+}
+
+.testamentHeader.collapsed {
+    background-color: #419dcc;
+}
+
 .testamentHeaderText {
     font-weight: 600;
     margin: 0 0;
     font-size: 20px;
     color: white;
+    float: left;
 }
 
 .chapter {
+    transition: background-color 0.5s ease;
     border-bottom: solid 1px #d6d6d6;
     padding: 0.5em;
+}
+
+.chapter:hover {
+    background-color: #e1eaef;
 }
 
 .durationBox {
@@ -26,12 +63,23 @@
     justify-content: center;
 }
 
+.bookHeader.collapsed {
+    background-color: white;
+}
+
 .bookHeader {
+    transition: background-color 0.5s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
+    background-color: #bbd4e2;
 }
+
+.bookHeader:hover {
+    background-color: #e1eaef;
+}
+
 
 .shortIcon {
     float: left;
@@ -47,6 +95,10 @@
     margin: 0.4em;
 }
 
+.bookHeader:hover .shortIcon {
+    box-shadow: 1px 1px 5px grey;
+}
+
 .innerIcon {
 
     display: inline-block;
@@ -60,6 +112,24 @@ p.shortBook {
 
 .bookName {
     width: 100%;
+}
+
+.bookName:after {
+    float: right;
+    font-family: 'Glyphicons Halflings';
+    content: "\e114";
+    float: right;
+    color: grey;
+    margin-right: 0.5em;
+}
+
+.collapsed .bookName:after {
+    float: right;
+    font-family: 'Glyphicons Halflings';
+    content: "\e080";
+    float: right;
+    color: grey;
+    margin-right: 0.5em;
 }
 
 p.bookNameText {
@@ -78,6 +148,11 @@ button.btnPlay {
     border: none;
     color: white;
     margin-right: 10px;
+    border-radius: 3px;
+}
+
+.chapter:hover button.btnPlay {
+    box-shadow: 1px 1px 5px grey;
 }
 
 p.book {
