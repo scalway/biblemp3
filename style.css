@@ -1,15 +1,18 @@
-div.bookPosition {
+div.chapter {
     border-bottom: solid 1px #d6d6d6;
 }
 
 .shortIcon {
-    background-color: red;
     float: left;
-    margin-right: 10px;
+    width: 10%;
+}
+
+.icon {
+    background-color: red;
     padding: 4px;
-    width: 30px;
     text-align: center;
     border-radius: 5px;
+    display: inline-block;
 }
 
 p.shortBook {

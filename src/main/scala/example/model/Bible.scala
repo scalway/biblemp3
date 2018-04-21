@@ -14,7 +14,7 @@ case class BibleTestament(files:Seq[BibleFile]) {
   def books:Seq[Book] = files.groupBy(_.shortBook).map {
     case (n, f) =>
       val head = f.head
-      Book(head.book, head.shortBook, files)
+      Book(head.book, head.shortBook, f)
   }.toSeq
 }
 
