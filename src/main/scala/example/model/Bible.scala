@@ -1,5 +1,4 @@
 package example.model
-
 import example.BibleMp3Data
 
 case class Bible(nt:BibleT, ot:BibleT) {
@@ -20,9 +19,9 @@ case class BibleT(files:Seq[BibleFile]) {
 }
 
 case class Book(name:String, short:String, files:Seq[BibleFile]) {
-  def parts = {
+  def parts: Map[String, Seq[BibleFile]] = {
     val res = files.groupBy(_.version)
-    res.withDefault(c => res.get("cała"))
+    res.withDefault(c => res("cała"))
   }
 }
 

@@ -1,19 +1,9 @@
 package example
 
+import example.model.BibleFile
 import org.scalajs.dom
 import org.scalajs.dom.html.{Div, Heading}
-
 import scalatags.JsDom.all._
-
-case class BibleFile(
-  url:String,
-  book:String,
-  shortBook:String,
-  version:String,
-  versionPartName:String,
-  duration:String,
-  bookKind:String
-)
 
 object Hello {
 
@@ -38,7 +28,7 @@ object Hello {
       div(cls := "shortIcon", p(b.shortBook, cls := "shortBook")),
       p(b.book, cls := "book"),
       button(cls := "btnPlay", i(cls := "fa fa-play")),
-      p(b.duration, cls := "duration"),
+      p(b.name, cls := "duration"),
       p("", clear := "both", margin := "0 0")
     ).render
   }
