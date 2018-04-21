@@ -1,6 +1,6 @@
 package example.model
 
-import example.{BibleFile, BibleMp3Data}
+import example.BibleMp3Data
 
 case class Bible(nt:BibleT, ot:BibleT) {
   def all = BibleT(ot.files ++ nt.files)
@@ -25,3 +25,13 @@ case class Book(name:String, short:String, files:Seq[BibleFile]) {
     res.withDefault(c => res.get("cała"))
   }
 }
+
+case class BibleFile(
+  url:String,
+  book:String,
+  shortBook:String,
+  version:String,
+  versionPartName:String,
+  name:String,
+  bookKind:String
+)

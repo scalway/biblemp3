@@ -5,17 +5,6 @@ import org.scalajs.dom.html.{Div, Heading}
 
 import scalatags.JsDom.all._
 
-case class BibleFile(
-  url:String,
-  book:String,
-  shortBook:String,
-  version:String,
-  versionPartName:String,
-  name:String,
-  bookKind:String
-)
-
-
 object Hello {
 
   def main(args: Array[String]): Unit = {
