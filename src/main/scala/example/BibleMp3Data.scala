@@ -1,7 +1,7 @@
 package example
 
 object BibleMp3Data {
-  val ST = Seq(
+  val OT = Seq(
     BibleFile("http://biblia-mp3.pl/Ksiega_Rodzaju.mp3", "Księga Rodzaju", "Rdz", "cała", "cała", "3:31:27", "Historyczne"),
     BibleFile("http://biblia-mp3.pl/Ksiega_Rodzaju_0_Wstep.mp3", "Księga Rodzaju", "Rdz", "podzielona", "Wstęp", "6:09", "Historyczne"),
     BibleFile("http://biblia-mp3.pl/Ksiega_Rodzaju_1-8.mp3", "Księga Rodzaju", "Rdz", "podzielona", "rozdziały 1-8", "27:52", "Historyczne"),
@@ -216,7 +216,7 @@ object BibleMp3Data {
     BibleFile("http://biblia-mp3.pl/Ezechiel_38-43.mp3", "Księga Ezechiela", "Ez", "podzielona", "rozdziały 38-43", "29:42", "Profetyczne"),
     BibleFile("http://biblia-mp3.pl/Ezechiel_44-48.mp3", "Księga Ezechiela", "Ez", "podzielona", "rozdziały 44-48", "26:41", "Profetyczne"),
 
-      BibleFile("http://biblia-mp3.pl/Ksiega_Daniela.mp3", "Księga Daniela", "Dn", "cała", "cała", "1:26:13", "Profetyczne"),
+    BibleFile("http://biblia-mp3.pl/Ksiega_Daniela.mp3", "Księga Daniela", "Dn", "cała", "cała", "1:26:13", "Profetyczne"),
     BibleFile("http://biblia-mp3.pl/Daniel_wstep.mp3", "Księga Daniela", "Dn", "podzielona", "wstęp", "4:53", "Profetyczne"),
     BibleFile("http://biblia-mp3.pl/Daniel_01-04.mp3", "Księga Daniela", "Dn", "podzielona", "rozdziały 1-4", "32:59", "Profetyczne"),
     BibleFile("http://biblia-mp3.pl/Daniel_05-09.mp3", "Księga Daniela", "Dn", "podzielona", "rozdziały 5-9", "25:33", "Profetyczne"),
