@@ -1,7 +1,7 @@
 package example
 
 import example.model.{Bible, BibleFile}
-import example.views.{BibleTestamentView, BibleViews}
+import example.views.{AudioPlayerView, BibleTestamentView, BibleViews}
 import org.scalajs.dom
 import org.scalajs.dom.html.{Div, Heading}
 import org.scalajs.jquery.jQuery
@@ -22,6 +22,7 @@ object Hello {
 
   val view: Div = div(
     header,
+    AudioPlayerView.view,
     new BibleTestamentView(Bible.nt).view,
     new BibleTestamentView(Bible.ot).view,
     footer

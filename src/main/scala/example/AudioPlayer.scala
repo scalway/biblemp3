@@ -1,6 +1,7 @@
 package example
 
 import example.model.BibleFile
+import example.views.{Amplitude, AudioPlayerView}
 import org.scalajs.dom
 
 import scala.util.Try
@@ -8,28 +9,23 @@ import scalatags.JsDom.all._
 
 object AudioPlayer {
   var last:Option[BibleFile] = None
-  val underlaying = audio().render
 
-  def toggle(s:BibleFile) = last match {
+  def toggle(s:BibleFile):Unit = last match {
     case Some(l) if l == s =>
       last = None
       Database.position.apply(s)
-      underlaying.pause()
+      AudioPlayerView.pause()
+      AudioPlayerView.initExample()
+      ()
     case other =>
-      last.map(Database.position.set(_, underlaying.currentTime))
+      last.map(Database.position.set(_, Amplitude.audio().currentTime))
       dom.console.warn(s"playing $s")
       last = Some(s)
-      underlaying.src = s.url
-      underlaying.currentTime = Database.position.apply(s)
-      underlaying.play()
+      AudioPlayerView.prepare(s, Database.position.apply(s))
+      AudioPlayerView.play()
   }
 
-  def pause() = underlaying.pause()
-
-  val playerView = div(
-
-  )
-
+  def pause() = AudioPlayerView.pause()
 }
 
 class DBAccessor[T, V](name:String, key:T => String, v2s:V => String, s2v:String => V, default:V) {
