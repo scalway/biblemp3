@@ -16,9 +16,11 @@ scalaJSUseMainModuleInitializer := true
 skip in packageJSDependencies := false
 
 libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-dom" % "0.9.1",
-  "be.doeraene" %%% "scalajs-jquery" % "0.9.1",
-  "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+  "org.scala-js"      %%% "scalajs-dom" % "0.9.1",
+  "com.lihaoyi"       %%% "utest" % "0.6.3" % "test",
+  "com.lihaoyi"       %%% "scalatags" % "0.6.7",
+  "com.lihaoyi"       %%% "sourcecode" % "0.1.3",
+  "be.doeraene"       %%% "scalajs-jquery" % "0.9.1"
 )
 
 jsDependencies ++= Seq(
