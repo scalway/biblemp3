@@ -32,7 +32,7 @@ class BibleTestamentView(b:BibleTestament) {
       booksViews.map(_.view)
     ).render
 
-    div(header, content).render
+    div(cls := "testament", header, content).render
   }
 }
 
@@ -68,11 +68,21 @@ class BookView(b:Book) {
 
 
 class BibleFileView(b:BibleFile) {
+  val icon = i(cls := "fa fa-play").render
+
+  def setState(a:Boolean) = {
+    icon.classList.toggle("fa-play", a)
+    icon.classList.toggle("fa-pause", !a)
+  }
+
   val view: Div = {
     div(cls :="chapter",
-      button(cls := "btnPlay", i(cls := "fa fa-play")),
+      button(cls := "btnPlay", icon),
       p(b.versionPartName, cls := "book"),
-      p(b.name, cls := "duration"),
+      div(cls := "durationBox",
+        i(cls := "fa fa-clock-o", aria.hidden := "true"),
+        p(b.name, cls := "duration")
+      ),
       onclick := { () => AudioPlayer.toggle(b) },
       p("", clear := "both", margin := "0 0")
     ).render
