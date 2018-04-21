@@ -82,6 +82,7 @@
 
 
 .shortIcon {
+    transition: 1s;
     float: left;
     background-color: red;
     padding: 4px;
@@ -143,6 +144,7 @@ p.bookNameText {
 }
 
 button.btnPlay {
+    transition: 1s;
     float: left;
     background-color: #2375ce;
     border: none;
@@ -171,9 +173,10 @@ i.fa.fa-clock-o {
     margin-right: 0.3em;
 }
 
-
-//player !!!
-
+div#single-song-player {
+    position: sticky;
+    top: 0;
+}
 
 div#single-song-player img[amplitude-song-info="cover_art_url"] {
   width: 100%;
