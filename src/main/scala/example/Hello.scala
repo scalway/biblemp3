@@ -12,7 +12,6 @@ object Hello {
   def main(args: Array[String]): Unit = {
     dom.document.body.innerHTML = ""
     dom.document.body.appendChild(view)
-    jQuery
     dom.window.setTimeout(() => {
       header.style.color = "pink"
     }, 2200)
