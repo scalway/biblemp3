@@ -142,14 +142,20 @@ p.bookNameText {
     border-bottom: solid 1px #d6d6d6;
 }
 
+.chapter.selected button.btnPlay {
+    border: 2px solid blue;
+
+}
+
 button.btnPlay {
     transition: 1s;
     float: left;
-    background-color: #2375ce;
+    background-color: #a4b4c7;
     border: none;
     color: white;
     margin-right: 10px;
     border-radius: 3px;
+    border: 2px solid #b1b1b1;
 }
 
 .chapter:hover button.btnPlay {
