@@ -1,4 +1,5 @@
 package example.views
+import example.Database
 import example.model.BibleFile
 import org.scalajs.dom
 import org.scalajs.dom.html.Audio
@@ -51,26 +52,41 @@ trait AmplitudeCallbacks extends js.Any {
 object AudioPlayerView {
   val obj = js.Dynamic.literal
   def play(): Unit = jQuery(".amplitude-play").click()
-  def pause() = jQuery(".amplitude-play").click()
+  def pause() = jQuery(".amplitude-pause").click()
 
   def sjsFunction[T](f:js.Function0[T]) = f
+
+  def getCurrentSongFile() = {
+    val url = songs(Amplitude.getActiveIndex()).url.asInstanceOf[String]
+    songsOrginal.find(url == _.url)
+  }
 
   val callbacks = obj(
     after_play = sjsFunction(() => dom.console.warn("after_play")),
     after_stop = sjsFunction(() => dom.console.warn("after_stop")),
-    time_update = sjsFunction(() => dom.console.warn("time_update"))
+    time_update = sjsFunction(() =>
+      getCurrentSongFile().map { s=>
+        dom.console.warn("time_update")
+        Database.position.set(s, Amplitude.audio().currentTime)
+      }
+    )
   )
 
+  var songsOrginal = Seq.empty[BibleFile]
   var songs: js.Array[js.Dynamic] = js.Array()
   var songVersions: js.Dictionary[js.Array[Int]] = js.Dictionary()
 
   def setPlaylist(list:Seq[BibleFile]) = {
+
     import scala.scalajs.js.JSConverters._
+
     songVersions =
       list.zipWithIndex
         .groupBy(_._1.version)
         .map(s => s._1 -> s._2.map(_._2).toJSArray)
         .toJSDictionary
+
+    songsOrginal = list
 
     songs = list.map { book =>
       obj(
