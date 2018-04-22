@@ -78,8 +78,8 @@ class BibleViews {
     div(
       cls := "tabContainer",
       ul(cls := "nav nav-tabs",
-        li(cls := "testTab", a(data.toggle := "tab", href := "#"+View.ntid, "Stary Testament")),
-        li(cls := "testTab active", a(data.toggle := "tab", href := "#"+View.stid, "Nowy Testament")),
+        li(cls := "testTab", a(data.toggle := "tab", href := "#"+View.stid, "Stary Testament")),
+        li(cls := "testTab active", a(data.toggle := "tab", href := "#"+View.ntid, "Nowy Testament")),
         li(cls := "infoTab", a(data.toggle := "tab",
           padding := "1.18em 0",
           href := "#app-info",

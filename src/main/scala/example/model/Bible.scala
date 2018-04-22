@@ -7,8 +7,8 @@ case class Bible(nt:BibleTestament, ot:BibleTestament) {
 }
 
 object Bible extends Bible(
-  BibleTestament("Stary Testament", BibleMp3Data.OT),
-  BibleTestament("Nowy Testament", BibleMp3Data.NT)
+  nt = BibleTestament("Nowy Testament", BibleMp3Data.NT),
+  ot = BibleTestament("Stary Testament", BibleMp3Data.OT)
 )
 
 case class BibleTestament(name:String, files:Seq[BibleFile]) {

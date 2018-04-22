@@ -17,7 +17,7 @@ object Hello {
       println("song changed from = " + old)
       println(s"song changed to ($isPlaying) = " + newB)
       val oldB = old.getOrElse(BibleFile.empty)
-      val all = ntView.booksViews.flatMap(_.fileViews)
+      val all = ntView.booksViews.flatMap(_.fileViews) ++ otView.booksViews.flatMap(_.fileViews)
       all.collect { case x if x.b.url == oldB.url => x.setPlaying(None) }
       all.collect { case x if x.b.url == newB.url => x.setPlaying(Some(isPlaying)) }
     }

@@ -17,6 +17,8 @@
 }
 
 .infoParagraph {
+    font-size: 18px;
+    padding: 10px 20px 10px 10px;
     transition: background-color 0.5s ease;
     display: flex;
     align-items: center;
@@ -83,16 +85,18 @@
 .shortIcon {
     transition: 1s;
     float: left;
-    background-color: red;
+    background-color: gray;
     padding: 4px;
     border-radius: 5px;
-    width: 4em;
-    height: 4em;
+    width: 3.5em;
+    height: 3em;
     margin-right: 1em;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0.4em;
+    font-size: 1.4em;
+    flex-shrink: 0;
 }
 
 .bookHeader:hover .shortIcon, .infoParagraph:hover .shortIcon {
@@ -246,6 +250,13 @@ div#stickyMenu {
     background-color: #202136;
     color: white;
     text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.tab-pane  {
+    padding-bottom: 100px;
 }
 
 
@@ -315,12 +326,13 @@ div#single-song-player div.bottom-container div.control-container {
 }
 
 .amplitude-play-pause {
-  width: 90px;
-  height: 90px;
+  width: 72px;
+  height: 72px;
   cursor: pointer;
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+
 }
 
 .amplitude-paused {
@@ -337,17 +349,19 @@ div#single-song-player div.bottom-container div.control-container div.meta-conta
   color: white;
   margin-top: 10px;
 }
-div#single-song-player div.bottom-container div.control-container div.meta-container span[amplitude-song-info="name"] {
+
+div.meta-container span[amplitude-song-info="name"] {
   font-family: "Open Sans", sans-serif;
-  font-size: 18px;
+  font-size: 24px;
   color: #fff;
   display: block;
 }
+
 div#single-song-player div.bottom-container div.control-container div.meta-container span[amplitude-song-info="artist"] {
   font-family: "Open Sans", sans-serif;
   font-weight: 100;
-  font-size: 14px;
-  color: #fff;
+  font-size: 18px;
+  color: #8d8d8d;
   display: block;
 }
 div#single-song-player div.bottom-container div.control-container:after {
