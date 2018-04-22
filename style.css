@@ -267,3 +267,10 @@ div#single-song-player div.bottom-container div.control-container:after {
   display: table;
   clear: both;
 }
+
+div#flat-black-player-container div#player-bottom div#control-container div#next-container {
+    width: 20%;
+    float: left;
+    height: 60px;
+    padding-top: 18px;
+}
