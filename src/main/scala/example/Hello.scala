@@ -23,7 +23,6 @@ object Hello {
     }
 
     ntView.view.classList.add("active")
-    otView.view.classList.add("active")
     AudioPlayerView.setPlaylist(Bible.all.files)
 
 
