@@ -24,9 +24,14 @@ object Hello {
 
   val view: Div = div(
     header,
-    AudioPlayerView.view,
-    new BibleTestamentView(Bible.nt, colorsNT).view,
-    new BibleTestamentView(Bible.ot, colorsST).view,
+    div(id := "stickyMenu",
+      AudioPlayerView.view,
+      new BibleViews().view
+    ),
+    div(cls := "tab-content",
+      new BibleTestamentView(Bible.nt, colorsNT).view,
+      new BibleTestamentView(Bible.ot, colorsST).view,
+    ),
     footer
   ).render
 }
