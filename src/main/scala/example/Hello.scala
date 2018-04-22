@@ -19,13 +19,18 @@ object Hello {
   val colorsST = Seq("#e00b3c", "#9a13dd", "#1357dd", "#13ddae", "#13b5dd")
   val colorsNT = Seq("#ddac25", "#6113dd", "#13b5dd", "#d7dd13")
 
-  val header: Heading = h1("hello world").render
+  val header: Div = div().render
 
   val view: Div = div(
     header,
-    AudioPlayerView.view,
-    new BibleTestamentView(Bible.nt, colorsNT).view,
-    new BibleTestamentView(Bible.ot, colorsST).view,
+    div(id := "stickyMenu",
+      AudioPlayerView.view,
+      new BibleViews().view
+    ),
+    div(cls := "tab-content",
+      new BibleTestamentView(Bible.nt, colorsNT).view,
+      new BibleTestamentView(Bible.ot, colorsST).view,
+    ),
     footer
   ).render
 }

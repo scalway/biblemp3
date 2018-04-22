@@ -1,17 +1,29 @@
 package example.views
 
 import example.AudioPlayer
-import example.model.{BibleFile, BibleTestament, Book}
+import example.model.{Bible, BibleFile, BibleTestament, Book}
 import org.scalajs.dom.html.Div
 import example.utils.Implicits._
 import scalatags.JsDom
 import scalatags.JsDom.all._
 import org.scalajs.jquery.jQuery
 
-object BibleViews {
-
+object View {
+  val stid = Bible.ot.name.hashCode
+  val ntid = Bible.nt.name.hashCode
 }
 
+class BibleViews {
+  val view: Div = {
+    div(
+      cls := "tabContainer",
+      ul(cls := "nav nav-tabs",
+        li(a(data.toggle := "tab", href := "#"+View.stid, "Stary Testament")),
+        li(a(data.toggle := "tab", href := "#"+View.ntid, "Nowy Testament"))
+      )
+    ).render
+  }
+}
 
 class BibleTestamentView(b:BibleTestament, colors:Seq[String]) {
   val colorMapping =
@@ -21,7 +33,7 @@ class BibleTestamentView(b:BibleTestament, colors:Seq[String]) {
   val booksViews = b.books.map(s => new BookView(s, colorMapping(s.group)))
 
   val view: Div = {
-    val bid = b.name.hashCode
+    /*val bid = b.name.hashCode
 
     val header = div(
       data.toggle := "collapse",
@@ -38,7 +50,15 @@ class BibleTestamentView(b:BibleTestament, colors:Seq[String]) {
       booksViews.map(_.view)
     ).render
 
-    div(cls := "testament", header, content).render
+    div(cls := "testament",
+      header,
+      content).render*/
+
+    div(
+      id := b.name.hashCode,
+      cls := "tab-pane",
+      booksViews.map(_.view)
+    ).render
   }
 }
 

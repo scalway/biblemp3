@@ -82,6 +82,7 @@
 
 
 .shortIcon {
+    transition: 1s;
     float: left;
     background-color: red;
     padding: 4px;
@@ -143,6 +144,7 @@ p.bookNameText {
 }
 
 button.btnPlay {
+    transition: 1s;
     float: left;
     background-color: #2375ce;
     border: none;
@@ -171,9 +173,35 @@ i.fa.fa-clock-o {
     margin-right: 0.3em;
 }
 
+.nav-tabs>li {
+    width: 50%;
+    text-align: center;
+}
 
-//player !!!
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+    color: white;
+    cursor: default;
+    background-color: #1b6184;
+    border: none;
+}
 
+.nav>li>a:focus, .nav>li>a:hover {
+    text-decoration: none;
+    background-color: #419dcc;
+}
+
+.nav-tabs>li a {
+    background-color: #2375ce;
+    color: white;
+    border: none;
+    margin-right: 0;
+    border-radius: 0 0 0 0;
+}
+
+div#stickyMenu {
+    position: sticky;
+    top: 0;
+}
 
 div#single-song-player img[amplitude-song-info="cover_art_url"] {
   width: 100%;
