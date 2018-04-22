@@ -96,7 +96,7 @@ case class BookView(b:Book, color:String) {
 class BibleFileView(b:BibleFile) {
   val icon = i(cls := "fa fa-play").render
 
-  def setState(a:Boolean) = {
+  def setPlaying(a:Boolean) = {
     icon.classList.toggle("fa-play", a)
     icon.classList.toggle("fa-pause", !a)
   }

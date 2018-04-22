@@ -1,5 +1,5 @@
 package example.views
-import example.Database
+import example.{AudioPlayer, Database}
 import example.model.BibleFile
 import org.scalajs.dom
 import org.scalajs.dom.html.Audio
@@ -25,7 +25,7 @@ object Amplitude extends js.Any {
 
 
 @ScalaJSDefined
-trait AmplitudeCallbacks extends js.Any {
+trait AmplitudeCallbacks extends js.Object {
   /** Occurs before the play method is called */
   var before_play:UndefOr[js.Function0[Any]] = js.undefined
 
@@ -61,16 +61,25 @@ object AudioPlayerView {
     songsOrginal.find(url == _.url)
   }
 
-  val callbacks = obj(
-    after_play = sjsFunction(() => dom.console.warn("after_play")),
-    after_stop = sjsFunction(() => dom.console.warn("after_stop")),
+
+
+
+  val callbacks = new AmplitudeCallbacks {
+    song_change = sjsFunction { () =>
+      dom.console.warn("song changed")
+      dom.window.setTimeout(() => {
+        getCurrentSongFile().map(AudioPlayer.onSongChange)
+      }, 200)
+    }
+    after_play = sjsFunction(() => dom.console.warn("after_play"))
+    after_stop = sjsFunction(() => dom.console.warn("after_stop"))
     time_update = sjsFunction(() =>
-      getCurrentSongFile().map { s=>
+      getCurrentSongFile().map { s =>
         dom.console.warn("time_update")
         Database.position.set(s, Amplitude.audio().currentTime)
       }
     )
-  )
+  }
 
   var songsOrginal = Seq.empty[BibleFile]
   var songs: js.Array[js.Dynamic] = js.Array()

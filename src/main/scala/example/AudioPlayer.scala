@@ -8,6 +8,8 @@ import scala.util.Try
 import scalatags.JsDom.all._
 
 object AudioPlayer {
+  var songListeners:Seq[(Option[BibleFile], BibleFile) => Any] = Seq.empty
+
   var last:Option[BibleFile] = None
 
   def toggle(s:BibleFile):Unit = {
@@ -18,11 +20,15 @@ object AudioPlayer {
         Database.position.apply(s)
         AudioPlayerView.pause()
       case other =>
-        last.map(Database.position.set(_, Amplitude.audio().currentTime))
-        dom.console.warn(s"playing $s")
-        last = Some(s)
+        onSongChange(s)
         AudioPlayerView.play(s, Database.position.apply(s))
     }
+  }
+
+  def onSongChange(to:BibleFile) = {
+    dom.console.warn(s"playing $to")
+    songListeners.foreach(_.apply(last, to))
+    last = Some(to)
   }
 
   def pause() = AudioPlayerView.pause()
