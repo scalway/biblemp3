@@ -13,13 +13,41 @@ object View {
   val ntid = Bible.nt.name.hashCode
 }
 
+class InfoView {
+  val view: JsDom.TypedTag[Div] = {
+    div(
+      p("""
+        |Witaj na stronie zawierającej Biblię w formie plików audio.
+        |Dzięki temu możesz wsłuchiwać się w słowa Biblii w dowolnym miejscu, dysponując komputerem lub odtwarzaczem MP3.
+        |Nagrania zawierają Biblię w przekładzie znanym jako Biblia Tysiąclecia -
+        |będącym oficjalnym tłumaczeniem liturgicznym Kościoła Katolickiego w Polsce.
+        """.stripMargin),
+      p("""
+        |Pliki zostały znalezione w internecie, a nagrane zostały przez Bibliotekę Centralną Polskiego Związku Niewidomych w 1982 roku.
+        |Nagranie udostępniamy za zgodą Biblioteki. Serdecznie dziękujemy pani Dyrektor Biblioteki Teresie Dederko za życzliwość i za umożliwienie nam tego zadania.
+        """.stripMargin),
+      p("""Poszczególne księgi publikowana są w dwóch wersjach - cala księga jako jeden (czasem bardzo długi) plik oraz księga podzielona na kilka plików, o długości 30-40 min
+        |(dla osób, które nie mogą pozwolić sobie na komfort przesłuchania za jednym razem całej księgi). Zapraszamy do słuchania - ewentualne uwagi proszę przekazywać na adres kuba@choinski.pl.
+        """.stripMargin),
+      p("""Jeśli chcesz mieć na swoim komputerze/odtwarzaczu całą Biblię, możesz pobrać jeden plik (archiwum zip) zawierający całość nagrania. Uwaga - plik ma 1,2 GB i jego pobranie może potrwać zależnie od szybkości łącza) - plik dostępny jest tutaj - Cała Biblia w postaci archiwum ZIP
+        """.stripMargin)
+  )
+  }
+}
+
 class BibleViews {
   val view: Div = {
     div(
       cls := "tabContainer",
       ul(cls := "nav nav-tabs",
-        li(a(data.toggle := "tab", href := "#"+View.stid, "Stary Testament")),
-        li(a(data.toggle := "tab", href := "#"+View.ntid, "Nowy Testament"))
+        li(cls := "testTab", a(data.toggle := "tab", href := "#"+View.stid, "Stary Testament")),
+        li(cls := "testTab active", a(data.toggle := "tab", href := "#"+View.ntid, "Nowy Testament")),
+        li(cls := "infoTab", a(data.toggle := "tab",
+          padding := "1.18em 0",
+          href := "#app-info",
+          span(cls := "fa fa-info-circle fa-2x")
+          )
+        )
       )
     ).render
   }
@@ -33,27 +61,6 @@ class BibleTestamentView(b:BibleTestament, colors:Seq[String]) {
   val booksViews = b.books.map(s => new BookView(s, colorMapping(s.group)))
 
   val view: Div = {
-    /*val bid = b.name.hashCode
-
-    val header = div(
-      data.toggle := "collapse",
-      data.target := "#" + bid,
-      cls := "testamentHeader collapsed",
-      div(cls := "testamentHeaderTextContainer",
-        p(b.name, cls := "testamentHeaderText")
-      )
-    ).render
-
-    val content = div(
-      id := bid,
-      cls := "collapse",
-      booksViews.map(_.view)
-    ).render
-
-    div(cls := "testament",
-      header,
-      content).render*/
-
     div(
       id := b.name.hashCode,
       cls := "tab-pane",
