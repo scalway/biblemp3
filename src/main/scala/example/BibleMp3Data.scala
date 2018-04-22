@@ -60,8 +60,9 @@ object BibleMp3Data {
     BibleFile("http://biblia-mp3.pl/Ksiega_Sedziow_19_21.mp3", "Księga Sędziów", "Sdz", "podzielona", "rozdziały 19-21", "19:16", "Historyczne"),
 
     BibleFile("http://biblia-mp3.pl/Ksiega_Rut.mp3", "Księga Rut", "Rt", "cała", "cała", "25:00", "Historyczne"),
-    BibleFile("http://biblia-mp3.pl/Wstep_do_1_Ksiega_Samuela.mp3", "Pierwsza Księga Samuela", "Sm", "podzielona", "Wstęp do ksiąg Samuela", "04:52", "Historyczne"),
+
     BibleFile("http://biblia-mp3.pl/1_Ksiega_Samuela.mp3", "Pierwsza Księga Samuela", "1 Sm", "cała", "cała", "2:17:00", "Historyczne"),
+    BibleFile("http://biblia-mp3.pl/Wstep_do_1_Ksiega_Samuela.mp3", "Pierwsza Księga Samuela", "1 Sm", "podzielona", "Wstęp do ksiąg Samuela", "04:52", "Historyczne"),
     BibleFile("http://biblia-mp3.pl/1_Ksiega_Samuela_1-10.mp3", "Pierwsza Księga Samuela", "1 Sm", "podzielona", "rozdziały 1-10 ", "40:52", "Historyczne"),
     BibleFile("http://biblia-mp3.pl/1_Ksiega_Samuela_11-17.mp3", "Pierwsza Księga Samuela", "1 Sm", "podzielona", "rozdziały 11-17 ", "38:53", "Historyczne"),
     BibleFile("http://biblia-mp3.pl/1_Ksiega_Samuela_18-24.mp3", "Pierwsza Księga Samuela", "1 Sm", "podzielona", "rozdziały 18-24 ", "29:57", "Historyczne"),
@@ -133,7 +134,7 @@ object BibleMp3Data {
     BibleFile("http://biblia-mp3.pl/2_Ksiega_Machabejska_1_4.mp3", "Druga Księga Machabejska", "2 Mch", "podzielona", "rozdziały 1-4", "29:31", "Historyczne"),
     BibleFile("http://biblia-mp3.pl/2_Ksiega_Machabejska_5_9.mp3", "Druga Księga Machabejska", "2 Mch", "podzielona", "rozdziały 5-9", "32:50", "Historyczne"),
     BibleFile("http://biblia-mp3.pl/2_Ksiega_Machabejska_10_13.mp3", "Druga Księga Machabejska", "2 Mch", "podzielona", "rozdziały 10-13", "28:05", "Historyczne"),
-    BibleFile("http://biblia-mp3.pl/2_Ksiega_Machabejska_14_15.mp3", "Druga Księga Machabejska", "2 Mch", "podzielona", "rozdziały 14_15", "16:25", "Historyczne"),
+    BibleFile("http://biblia-mp3.pl/2_Ksiega_Machabejska_14_15.mp3", "Druga Księga Machabejska", "2 Mch", "podzielona", "rozdziały 14-15", "16:25", "Historyczne"),
 
     BibleFile("http://biblia-mp3.pl/Ksiega_Hioba.mp3", "Księga Hioba", "Hi", "cała", "cała", "2:45:31", "Dydaktyczne"),
     BibleFile("http://biblia-mp3.pl/Ksiega_Hioba_00_wstep.mp3", "Księga Hioba", "Hi", "podzielona", "Wstęp ", "7:04", "Dydaktyczne"),

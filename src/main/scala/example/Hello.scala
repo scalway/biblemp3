@@ -12,7 +12,7 @@ object Hello {
   def main(args: Array[String]): Unit = {
     dom.document.body.innerHTML = ""
     dom.document.body.appendChild(view)
-    ntView.view.classList.add("active")
+    otView.view.classList.add("active")
     AudioPlayerView.setPlaylist(Bible.all.files)
   }
 
@@ -20,6 +20,10 @@ object Hello {
   val colorsNT = Seq("#ddac25", "#6113dd", "#13b5dd", "#d7dd13")
 
   val header: Div = div().render
+  val footer: Div = div(
+    id := "footer",
+    p("Biblia-mp3 2018")
+  ).render
 
   val ntView = new BibleTestamentView(Bible.nt, colorsNT)
   val otView = new BibleTestamentView(Bible.ot, colorsST)

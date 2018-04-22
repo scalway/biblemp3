@@ -12,6 +12,21 @@
     padding: 1em;
 }
 
+.infoParagraph:hover {
+    background-color: #e6e6e6;
+}
+
+.infoParagraph {
+    transition: background-color 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.infoContent {
+    width: 100%;
+}
+
 .testamentHeader:hover,.testamentHeader.collapsed:hover {
     background-color: #2f7498;
 }
@@ -80,7 +95,7 @@
     margin: 0.4em;
 }
 
-.bookHeader:hover .shortIcon {
+.bookHeader:hover .shortIcon, .infoParagraph:hover .shortIcon {
     box-shadow: 1px 1px 5px grey;
 }
 
@@ -212,9 +227,19 @@ ul.nav.nav-tabs {
     border-radius: 0 0 0 0;
 }
 
+.fa {
+    cursor: pointer;
+}
+
 div#stickyMenu {
     position: sticky;
     top: 0;
+}
+
+#footer {
+    background-color: #202136;
+    color: white;
+    text-align: center;
 }
 
 
