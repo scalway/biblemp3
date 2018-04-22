@@ -273,6 +273,7 @@ div#single-song-player img[amplitude-song-info="cover_art_url"] {
 }
 div#single-song-player div.bottom-container {
   background-color: #202136;
+  position: relative;
 }
 
 progress.amplitude-song-played-progress:not([value]) {
@@ -375,4 +376,23 @@ div#flat-black-player-container div#player-bottom div#control-container div#next
     float: left;
     height: 60px;
     padding-top: 18px;
+}
+
+
+div.hover {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #202136;
+    transition: 2s;
+    z-index: 1000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+div.hover * {
+    height:90%;
 }

@@ -133,9 +133,9 @@ object AudioPlayerView {
   val progressView = progress(cls := "amplitude-song-played-progress", amplitude.main.song.played.progress := "true", id := "song-played-progress").render
 
   def icon(name:String, icon:String) = div( cls:=("amplitude-button amplitude-" + name), i(cls:=("fa fa-" + icon)))
+  val logoHover = div(cls:="hover", img(src:="assets/images/logo_01.png")).render
 
   val view = div( id:="single-song-player",
-    cls := "hidden",
     div( cls:="bottom-container",
       div( cls:="control-container",
         icon("prev", "backward"),
@@ -162,7 +162,8 @@ object AudioPlayerView {
           span( cls:="amplitude-duration-minutes", amplitude.main.duration.minutes:="true"),":",span( cls:="amplitude-duration-seconds", amplitude.main.duration.seconds:="true")
         )
       ),
-      progressView
+      progressView,
+      logoHover
     )
   ).render
 

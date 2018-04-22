@@ -14,7 +14,9 @@ object AudioPlayer {
   var lastIsPlaying:Boolean = false
 
   def toggle(s:BibleFile):Unit = {
-    AudioPlayerView.view.classList.remove("hidden")
+    AudioPlayerView.logoHover.style.opacity = "0.0"
+    dom.window.setTimeout(() => AudioPlayerView.logoHover.style.display = "none", 2000)
+
     last match {
       case Some(l) if l == s =>
         println("toggle same:" + lastIsPlaying)
