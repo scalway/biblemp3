@@ -6,7 +6,7 @@ import org.scalajs.dom.raw.{HTMLElement, MouseEvent}
 
 import scala.scalajs.js
 import scalatags.JsDom.all.{span, _}
-import org.scalajs.jquery.jQuery
+import org.scalajs.jquery.{JQuery, jQuery}
 
 import scala.scalajs.js.UndefOr
 import scala.scalajs.js.annotation.ScalaJSDefined
@@ -50,7 +50,7 @@ trait AmplitudeCallbacks extends js.Any {
 
 object AudioPlayerView {
   val obj = js.Dynamic.literal
-  def play() = jQuery(".amplitude-play").click()
+  def play(): Unit = jQuery(".amplitude-play").click()
   def pause() = jQuery(".amplitude-play").click()
 
   def sjsFunction[T](f:js.Function0[T]) = f
@@ -87,7 +87,7 @@ object AudioPlayerView {
     ))
   }
 
-  def play(book:BibleFile, position:Double = 0, play:Boolean = false) = {
+  def play(book:BibleFile, position:Double = 0): Unit = {
     val idx = songs.indexWhere(_.url == book.url)
     setSongItem.setAttribute("amplitude-song-index", idx.toString)
     setSongItem.setAttribute("amplitude-playlist", book.version)
@@ -100,23 +100,16 @@ object AudioPlayerView {
   val setSongItem = span(cls := "amplitude-play", display.none).render
   val progressView = progress(cls := "amplitude-song-played-progress", amplitude.main.song.played.progress := "true", id := "song-played-progress").render
 
+  def icon(name:String, icon:String) = div( cls:=("amplitude-button amplitude-" + name), i(cls:=("fa fa-" + icon)))
+
   val view = div( id:="single-song-player",
     cls := "hidden",
     div( cls:="bottom-container",
-      progressView,
-      div( cls:="time-container",
-        span( cls:="current-time",
-          span( cls:="amplitude-current-minutes", amplitude.main.current.minutes:="true"),":",span( cls:="amplitude-current-seconds", amplitude.main.current.seconds:="true")
-        ),
-        span( cls:="duration",
-          span( cls:="amplitude-duration-minutes", amplitude.main.duration.minutes:="true"),":",span( cls:="amplitude-duration-seconds", amplitude.main.duration.seconds:="true")
-        )
-      ),
-
       div( cls:="control-container",
-        div( id:="prev-container", div( id:="previous", cls:="amplitude-prev")),
+        icon("prev", "backward"),
+        icon("stop", "stop"),
         div( cls:="amplitude-play-pause", amplitude.main.play.pause:="true", id:="play-pause"),
-        div( id:="next-container", div( id:="next", cls:="amplitude-next")),
+        icon("next", "forward"),
 
         //todo this items are udes only from code
         setSongItem,
@@ -127,7 +120,17 @@ object AudioPlayerView {
           span( amplitude.song.info:="name", amplitude.main.song.info:="true", cls:="song-name"),
           span( amplitude.song.info:="artist", amplitude.main.song.info:="true")
         )
-      )
+      ),
+
+      div( cls:="time-container",
+        span( cls:="current-time",
+          span( cls:="amplitude-current-minutes", amplitude.main.current.minutes:="true"),":",span( cls:="amplitude-current-seconds", amplitude.main.current.seconds:="true")
+        ),
+        span( cls:="duration",
+          span( cls:="amplitude-duration-minutes", amplitude.main.duration.minutes:="true"),":",span( cls:="amplitude-duration-seconds", amplitude.main.duration.seconds:="true")
+        )
+      ),
+      progressView
     )
   ).render
 

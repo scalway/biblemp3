@@ -22,7 +22,6 @@ object AudioPlayer {
         dom.console.warn(s"playing $s")
         last = Some(s)
         AudioPlayerView.play(s, Database.position.apply(s))
-        AudioPlayerView.play()
     }
   }
 
