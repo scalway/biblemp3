@@ -47,12 +47,20 @@ trait AmplitudeCallbacks extends js.Object {
   /** Occurs when a song has been changed */
   var song_change:UndefOr[js.Function0[Any]] = js.undefined
 
+  var after_pause:UndefOr[js.Function0[Any]] = js.undefined
+
 }
 
 object AudioPlayerView {
   val obj = js.Dynamic.literal
-  def play(): Unit = jQuery(".amplitude-play").click()
-  def pause() = jQuery(".amplitude-pause").click()
+  def play(): Unit = {
+    println("AudioPlayerView.play()")
+    jQuery(".amplitude-play").click()
+  }
+  def pause() = {
+    println("AudioPlayerView.pause()")
+    jQuery(".amplitude-pause").click()
+  }
 
   def sjsFunction[T](f:js.Function0[T]) = f
 
@@ -62,17 +70,16 @@ object AudioPlayerView {
   }
 
 
-
+  def refresh() = dom.window.setTimeout(() => {
+    getCurrentSongFile().map(AudioPlayer.onSongChange(_, !Amplitude.audio().paused))
+  }, 200)
 
   val callbacks = new AmplitudeCallbacks {
-    song_change = sjsFunction { () =>
-      dom.console.warn("song changed")
-      dom.window.setTimeout(() => {
-        getCurrentSongFile().map(AudioPlayer.onSongChange)
-      }, 200)
-    }
-    after_play = sjsFunction(() => dom.console.warn("after_play"))
-    after_stop = sjsFunction(() => dom.console.warn("after_stop"))
+    song_change = sjsFunction { () => refresh() }
+    after_pause = sjsFunction{ () => refresh() }
+    after_play = sjsFunction{ () => refresh() }
+    after_stop = sjsFunction( () => refresh() )
+
     time_update = sjsFunction(() =>
       getCurrentSongFile().map { s =>
         dom.console.warn("time_update")

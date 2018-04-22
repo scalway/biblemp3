@@ -12,8 +12,21 @@ object Hello {
   def main(args: Array[String]): Unit = {
     dom.document.body.innerHTML = ""
     dom.document.body.appendChild(view)
+
+    AudioPlayer.songListeners :+= { (old:Option[BibleFile], newB:BibleFile, isPlaying:Boolean) =>
+      println("song changed from = " + old)
+      println(s"song changed to ($isPlaying) = " + newB)
+      val oldB = old.getOrElse(BibleFile.empty)
+      val all = ntView.booksViews.flatMap(_.fileViews)
+      all.collect { case x if x.b.url == oldB.url => x.setPlaying(None) }
+      all.collect { case x if x.b.url == newB.url => x.setPlaying(Some(isPlaying)) }
+    }
+
+    ntView.view.classList.add("active")
     otView.view.classList.add("active")
     AudioPlayerView.setPlaylist(Bible.all.files)
+
+
   }
 
   val colorsST = Seq("#e00b3c", "#9a13dd", "#1357dd", "#13ddae", "#13b5dd")

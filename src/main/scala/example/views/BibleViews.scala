@@ -138,12 +138,14 @@ case class BookView(b:Book, color:String) {
 }
 
 
-class BibleFileView(b:BibleFile) {
+class BibleFileView(val b:BibleFile) {
   val icon = i(cls := "fa fa-play").render
 
-  def setPlaying(a:Boolean) = {
-    icon.classList.toggle("fa-play", a)
-    icon.classList.toggle("fa-pause", !a)
+  def setPlaying(a:Option[Boolean]) = {
+    val playing = a.getOrElse(false)
+    view.classList.toggle("selected", a.isDefined)
+    icon.classList.toggle("fa-play", !playing)
+    icon.classList.toggle("fa-pause", playing)
   }
 
   val view: Div = {

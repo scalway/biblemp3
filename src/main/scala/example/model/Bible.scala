@@ -38,3 +38,7 @@ case class BibleFile(
                       name:String,
                       bookKind:String
                     )
+
+object BibleFile {
+  val empty: BibleFile = BibleFile("","","","","","","")
+}

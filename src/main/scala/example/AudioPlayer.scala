@@ -8,26 +8,28 @@ import scala.util.Try
 import scalatags.JsDom.all._
 
 object AudioPlayer {
-  var songListeners:Seq[(Option[BibleFile], BibleFile) => Any] = Seq.empty
+  var songListeners:Seq[(Option[BibleFile], BibleFile, Boolean) => Any] = Seq.empty
 
   var last:Option[BibleFile] = None
+  var lastIsPlaying:Boolean = false
 
   def toggle(s:BibleFile):Unit = {
     AudioPlayerView.view.classList.remove("hidden")
     last match {
       case Some(l) if l == s =>
-        last = None
-        Database.position.apply(s)
-        AudioPlayerView.pause()
+        println("toggle same:" + lastIsPlaying)
+        if (lastIsPlaying) AudioPlayerView.pause() else AudioPlayerView.play(s, Database.position.apply(s))
+        lastIsPlaying = !lastIsPlaying
       case other =>
-        onSongChange(s)
+        onSongChange(s, true)
         AudioPlayerView.play(s, Database.position.apply(s))
     }
   }
 
-  def onSongChange(to:BibleFile) = {
+  def onSongChange(to:BibleFile, isPlaying:Boolean) = {
+    lastIsPlaying = isPlaying
     dom.console.warn(s"playing $to")
-    songListeners.foreach(_.apply(last, to))
+    songListeners.foreach(_.apply(last, to, isPlaying))
     last = Some(to)
   }
 
