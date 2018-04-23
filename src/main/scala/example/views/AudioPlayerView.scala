@@ -3,7 +3,7 @@ import example.{AudioPlayer, Database}
 import example.model.BibleFile
 import org.scalajs.dom
 import org.scalajs.dom.html.Audio
-import org.scalajs.dom.raw.{HTMLElement, MouseEvent}
+import org.scalajs.dom.raw.{Event, HTMLElement, MouseEvent}
 
 import scala.scalajs.js
 import scalatags.JsDom.all.{span, _}
@@ -52,14 +52,23 @@ trait AmplitudeCallbacks extends js.Object {
 }
 
 object AudioPlayerView {
+    //TODO move it out
+  implicit class HtmlOps(val a:HTMLElement) {
+    def clickAndTouch() = {
+      a.click()
+      val e = js.Dynamic.newInstance(js.Dynamic.global.Event)("touchend").asInstanceOf[Event]
+      a.dispatchEvent(e)
+    }
+  }
+
   val obj = js.Dynamic.literal
   def play(): Unit = {
     println("AudioPlayerView.play()")
-    jQuery(".amplitude-play").click()
+    jQuery(".amplitude-play")(0).clickAndTouch()
   }
   def pause() = {
     println("AudioPlayerView.pause()")
-    jQuery(".amplitude-pause").click()
+    jQuery(".amplitude-pause")(0).clickAndTouch()
   }
 
   def sjsFunction[T](f:js.Function0[T]) = f
@@ -72,7 +81,7 @@ object AudioPlayerView {
 
   def refresh() = dom.window.setTimeout(() => {
     getCurrentSongFile().map(AudioPlayer.onSongChange(_, !Amplitude.audio().paused))
-  }, 200)
+  }, 400)
 
   val callbacks = new AmplitudeCallbacks {
     song_change = sjsFunction { () => refresh() }
@@ -123,13 +132,13 @@ object AudioPlayerView {
     val idx = songs.indexWhere(_.url == book.url)
     setSongItem.setAttribute("amplitude-song-index", idx.toString)
     setSongItem.setAttribute("amplitude-playlist", book.version)
-    setSongItem.click()
+    setSongItem.clickAndTouch()
     Amplitude.audio().currentTime = position
   }
 
   val progress = typedTag[HTMLElement]("progress")
   val amplitude = new DataAttribute(List("amplitude"))
-  val setSongItem = span(cls := "amplitude-play", display.none).render
+  val setSongItem = span(cls := "amplitude-play", height:="0.1").render
   val progressView = progress(cls := "amplitude-song-played-progress", amplitude.main.song.played.progress := "true", id := "song-played-progress").render
 
   def icon(name:String, icon:String) = div( cls:=("amplitude-button amplitude-" + name), i(cls:=("fa fa-" + icon)))
