@@ -2,20 +2,20 @@ package example.views
 import example.{AudioPlayer, Database}
 import example.model.BibleFile
 import org.scalajs.dom
-import org.scalajs.dom.html.Audio
+import org.scalajs.dom.html.{Audio, Div}
 import org.scalajs.dom.raw.{Event, HTMLElement, MouseEvent}
 
 import scala.scalajs.js
 import scalatags.JsDom.all.{span, _}
 import org.scalajs.jquery.{JQuery, jQuery}
 
-import scala.scalajs.js.UndefOr
+import scala.scalajs.js.{Dynamic, UndefOr}
 import scala.scalajs.js.annotation.ScalaJSDefined
 
 @js.native
 object Amplitude extends js.Any {
-  def init(a:js.Any) = js.native
-  def playNow(a:js.Any) = js.native
+  def init(a:js.Any):Unit = js.native
+  def playNow(a:js.Any):Unit = js.native
   def audio():Audio = js.native
   def play():Unit = js.native
   def pause():Unit = js.native
@@ -54,54 +54,54 @@ trait AmplitudeCallbacks extends js.Object {
 object AudioPlayerView {
     //TODO move it out
   implicit class HtmlOps(val a:HTMLElement) {
-    def clickAndTouch() = {
+    def clickAndTouch(): Boolean = {
       a.click()
       val e = js.Dynamic.newInstance(js.Dynamic.global.Event)("touchend").asInstanceOf[Event]
       a.dispatchEvent(e)
     }
   }
 
-  val obj = js.Dynamic.literal
+  val obj: Dynamic.literal.type = js.Dynamic.literal
   def play(): Unit = {
     println("AudioPlayerView.play()")
     jQuery(".amplitude-play")(0).clickAndTouch()
   }
-  def pause() = {
+  def pause(): Unit = {
     println("AudioPlayerView.pause()")
     jQuery(".amplitude-pause")(0).clickAndTouch()
   }
 
-  def sjsFunction[T](f:js.Function0[T]) = f
+  def sjsFunction[T](f:js.Function0[T]): js.Function0[T] = f
 
-  def getCurrentSongFile() = {
+  def getCurrentSongFile: Option[BibleFile] = {
     val url = songs(Amplitude.getActiveIndex()).url.asInstanceOf[String]
     songsOrginal.find(url == _.url)
   }
 
 
-  def refresh() = dom.window.setTimeout(() => {
-    getCurrentSongFile().map(AudioPlayer.onSongChange(_, !Amplitude.audio().paused))
+  def refresh(): Int = dom.window.setTimeout(() => {
+    getCurrentSongFile.foreach(AudioPlayer.onSongChange(_, !Amplitude.audio().paused))
   }, 400)
 
-  val callbacks = new AmplitudeCallbacks {
+  val callbacks: AmplitudeCallbacks = new AmplitudeCallbacks {
     song_change = sjsFunction { () => refresh() }
     after_pause = sjsFunction{ () => refresh() }
     after_play = sjsFunction{ () => refresh() }
     after_stop = sjsFunction( () => refresh() )
 
     time_update = sjsFunction(() =>
-      getCurrentSongFile().map { s =>
+      getCurrentSongFile.foreach { s =>
         dom.console.warn("time_update")
         Database.position.set(s, Amplitude.audio().currentTime)
       }
     )
   }
 
-  var songsOrginal = Seq.empty[BibleFile]
+  var songsOrginal: Seq[BibleFile] = Seq.empty
   var songs: js.Array[js.Dynamic] = js.Array()
   var songVersions: js.Dictionary[js.Array[Int]] = js.Dictionary()
 
-  def setPlaylist(list:Seq[BibleFile]) = {
+  def setPlaylist(list:Seq[BibleFile]): Unit = {
 
     import scala.scalajs.js.JSConverters._
 
@@ -136,15 +136,20 @@ object AudioPlayerView {
     Amplitude.audio().currentTime = position
   }
 
-  val progress = typedTag[HTMLElement]("progress")
-  val amplitude = new DataAttribute(List("amplitude"))
-  val setSongItem = span(cls := "amplitude-play", height:="0.1").render
-  val progressView = progress(cls := "amplitude-song-played-progress", amplitude.main.song.played.progress := "true", id := "song-played-progress").render
+  private val progress = typedTag[HTMLElement]("progress")
+  private val amplitude = new DataAttribute(List("amplitude"))
+  private val setSongItem = span(cls := "amplitude-play", height:="0.1").render
+
+  private val progressView = progress(
+    cls := "amplitude-song-played-progress",
+    amplitude.main.song.played.progress := "true",
+    id := "song-played-progress"
+  ).render
 
   def icon(name:String, icon:String) = div( cls:=("amplitude-button amplitude-" + name), i(cls:=("fa fa-" + icon)))
-  val logoHover = div(cls:="hover", img(src:="assets/images/logo_01.png")).render
+  val logoHover: Div = div(cls:="hover", img(src:="assets/images/logo_01.png")).render
 
-  val view = div( id:="single-song-player",
+  val view: Div = div( id:="single-song-player",
     div( cls:="bottom-container",
       div( cls:="control-container",
         icon("prev", "backward"),
@@ -152,7 +157,7 @@ object AudioPlayerView {
         div( cls:="amplitude-play-pause", amplitude.main.play.pause:="true", id:="play-pause"),
         icon("next", "forward"),
 
-        //todo this items are udes only from code
+        //todo this items are udes only from code. abstract over them?
         setSongItem,
         div( cls:="amplitude-pause", amplitude.main.play.pause:="true", display.none),
         div( cls:="amplitude-play", amplitude.main.play.pause:="true", display.none),
