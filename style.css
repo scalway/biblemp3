@@ -1,3 +1,7 @@
+body {
+    overscroll-behavior: contain;
+}
+
 .testamentHeaderTextContainer {
     width: 100%;
 }

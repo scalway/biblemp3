@@ -2,7 +2,7 @@
   "name": "Pismo Święte MP3",
   "short_name": "PŚ-MP3",
   "icons": [{
-    "src": "assets/web_hi_res_512.png",
+    "src": "web_hi_res_512.png",
     "sizes": "512x512",
     "type": "image/png"
   }],
