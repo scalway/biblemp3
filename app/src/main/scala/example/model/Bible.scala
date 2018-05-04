@@ -1,6 +1,53 @@
 package example.model
-import example.BibleMp3Data
+import example.{BibleMp3Data, UpickleDerivation}
 import example.utils.Implicits._
+import ujson.Transformable
+import upickle.default
+
+
+
+object Test {
+  sealed trait Tree
+  case class Node(child:Seq[Tree], age:Int) extends Tree
+  case class Leaf(s:String) extends Tree
+}
+
+//object Test3 {
+//  import Test._
+//  import UpickleDerivation._
+//  import upickle.default._
+//  println(write[T](C("Test")))
+//}
+
+object Test2 {
+  import Test._
+//  import example.UpickleDerivation._
+//  import magnolia._
+
+//  import upickle.default._
+
+  //import upickle.default.{SeqLikeReader => _, SeqLikeWriter => _, _}
+
+//  implicit def seqRW[T](implicit r:ReadWriter[T]): default.ReadWriter[Seq[T]] = ReadWriter.join(
+//    upickle.default.SeqLikeReader[Seq, T](r, implicitly),
+//    upickle.default.SeqLikeWriter[Seq, T](r)
+//  )
+//  implicit val NRW = implicitly[ReadWriter[Tree]]
+//  implicit lazy val seqTree = SeqLikeReader[Seq, Tree](c, implicitly)
+//  implicit val c = gen[Tree]
+//
+//  private val write1 = write[Tree](Node(Seq(Leaf("dd"))), 2)
+//  println(write1)
+
+  import example.Default._
+  println(gen[Tree].default)
+
+//  println(read[Tree](write1))
+
+//  Test3.toString
+}
+
+
 
 case class Bible(nt:BibleTestament, ot:BibleTestament) {
   def all = BibleTestament("", ot.files ++ nt.files)
@@ -9,7 +56,9 @@ case class Bible(nt:BibleTestament, ot:BibleTestament) {
 object Bible extends Bible(
   nt = BibleTestament("Nowy Testament", BibleMp3Data.NT),
   ot = BibleTestament("Stary Testament", BibleMp3Data.OT)
-)
+) {
+  Test2.toString
+}
 
 case class BibleTestament(name:String, files:Seq[BibleFile]) {
   val books:Seq[Book] = files.groupByOrdered(_.shortBook).map {
