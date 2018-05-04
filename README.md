@@ -1,7 +1,8 @@
 Rabbi.pl
 ========================
 
-Aplikacja zawarta na stronie Rabbi.pl.
+Aplikacja zawarta na stronie http://rabbi.pl napisana w całości w języku scala.
+jest to strona PWA stworzona podczas Hackateonu u Dominikanów w Krakowie.
 
 uruchomienie aplikacji
 -----------------------------------
