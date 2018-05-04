@@ -4,7 +4,11 @@ val common = Seq(
   version := "0.1",
   organization := "org.my",
   scalaVersion := "2.12.4",
-  sbtVersion := "1.0.4"
+  sbtVersion := "1.0.4",
+  testFrameworks += new TestFramework("utest.runner.Framework"),
+  libraryDependencies ++= Seq(
+    "com.lihaoyi" %%% "utest" % "0.6.3" % "test"
+  )
 )
 
 lazy val macros = project
@@ -30,8 +34,10 @@ lazy val app = project.in(file("app"))
   .settings(common)
   .settings(
     // This is an application with a main method
-    scalaJSUseMainModuleInitializer := true,
+    //scalaJSUseMainModuleInitializer := true,
+
     skip in packageJSDependencies := false,
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
     jsDependencies ++= Seq(
       "org.webjars" % "jquery" % "2.1.4" / "2.1.4/jquery.js"
     )

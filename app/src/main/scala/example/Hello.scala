@@ -3,13 +3,21 @@ package example
 import example.model.{Bible, BibleFile}
 import example.views.{AudioPlayerView, BibleTestamentView, BibleViews, InfoView}
 import org.scalajs.dom
-import org.scalajs.dom.html.{Div, Heading}
-import org.scalajs.jquery.jQuery
+import org.scalajs.dom.html.Div
+
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scalatags.JsDom.all._
 
+@JSExportTopLevel("example.Hello")
 object Hello {
+  def hello(name:String) = {
+    val msg = s"Hello, $name!"
+    dom.document.body.innerHTML = msg
+    msg
+  }
 
-  def main(args: Array[String]): Unit = {
+  @JSExport
+  def main(args: Array[String] = Array.empty): Unit = {
     dom.document.body.innerHTML = ""
     dom.document.body.appendChild(view)
 
