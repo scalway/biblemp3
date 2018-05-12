@@ -35,9 +35,16 @@ case class BibleFile(
                       shortBook:String,
                       version:String,
                       versionPartName:String,
-                      name:String,
+                      time:String,
                       bookKind:String
-                    )
+                    ) {
+  lazy val timeReal:Double = time.split(":") match {
+    case Array(h, m, s) => 3600*h.toInt + m.toInt * 60.toInt + s.toDouble
+    case Array(m, s) =>  60.toInt + s.toDouble
+    case Array(s) => s.toDouble
+    case other => 0.01
+  }
+}
 
 object BibleFile {
   val empty: BibleFile = BibleFile("","","","","","","")

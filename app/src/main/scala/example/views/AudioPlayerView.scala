@@ -139,7 +139,10 @@ object AudioPlayerView {
     setSongItemPlay.setAttribute("amplitude-song-index", idx.toString)
     setSongItemPlay.setAttribute("amplitude-playlist", book.version)
     setSongItemPlay.clickAndTouch()
-    Amplitude.audio().currentTime = position
+    val audio1 = Amplitude.audio()
+    audio1.addEventListener("loadeddata", (e:Event) => {
+      audio1.currentTime = position
+    })
     if(! autoplay) jQuery(".amplitude-pause")(0).clickAndTouch()
 
   }
