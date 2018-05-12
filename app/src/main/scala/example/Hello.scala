@@ -1,6 +1,7 @@
 package example
 
 import example.model.{Bible, BibleFile}
+import example.utils.Database
 import example.views.{AudioPlayerView, BibleTestamentView, BibleViews, InfoView}
 import org.scalajs.dom
 import org.scalajs.dom.html.Div
@@ -21,7 +22,8 @@ object Hello {
     dom.document.body.innerHTML = ""
     dom.document.body.appendChild(view)
 
-    AudioPlayer.songListeners :+= { (old:Option[BibleFile], newB:BibleFile, isPlaying:Boolean) =>
+    AudioPlayer.addChangeSongListener { (old, newB, isPlaying) =>
+
       println("song changed from = " + old)
       println(s"song changed to ($isPlaying) = " + newB)
       val oldB = old.getOrElse(BibleFile.empty)
@@ -33,7 +35,14 @@ object Hello {
     ntView.view.classList.add("active")
     AudioPlayerView.setPlaylist(Bible.all.files)
 
-
+    dom.window.setTimeout(
+      { () =>
+        Database.lastItemUrl.get().flatMap { url =>
+          Bible.all.files.find(_.url == url)
+        }.map(s => AudioPlayer.toggle(s)(false))
+      },
+      1000
+    )
   }
 
   val colorsST = Seq("#e00b3c", "#9a13dd", "#1357dd", "#13ddae", "#13b5dd")
@@ -53,13 +62,13 @@ object Hello {
     div(id := "stickyMenu",
       AudioPlayerView.view,
       new BibleViews().view
-      ),
-      div(cls := "tab-content",
-        ntView.view,
-        otView.view,
-        div(id := "app-info", cls := "tab-pane", new InfoView().view)
-      ),
-      footer
+    ),
+    div(cls := "tab-content",
+      ntView.view,
+      otView.view,
+      div(id := "app-info", cls := "tab-pane", new InfoView().view)
+    ),
+    footer
   ).render
 }
 

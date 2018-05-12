@@ -1,12 +1,14 @@
 package example
 
+import org.scalajs.dom
 import utest._
 
 object HelloTests extends TestSuite {
   val tests = Tests {
     "Hello.world" - {
-      val result = Hello.hello("Scala")
-      assert( result == "Hello, Scala!" )
+      Hello.hello("Scala")
+      val body = dom.document.body.innerHTML
+      assert(body == "Hello, Scala!")
     }
   }
 }

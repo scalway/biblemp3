@@ -1,6 +1,7 @@
 package example.views
-import example.{AudioPlayer, Database}
+import example.AudioPlayer
 import example.model.BibleFile
+import example.utils.Database
 import org.scalajs.dom
 import org.scalajs.dom.html.{Audio, Div}
 import org.scalajs.dom.raw.{Event, HTMLElement, MouseEvent}
@@ -19,6 +20,7 @@ object Amplitude extends js.Any {
   def audio():Audio = js.native
   def play():Unit = js.native
   def pause():Unit = js.native
+  def bindNewElements():Unit = js.native
   def getActiveIndex():Int = js.native
   def setSongPlayedPercentage(p:Double):Unit = js.native
 }
@@ -121,6 +123,10 @@ object AudioPlayerView {
       ).asInstanceOf[js.Dynamic]
     }(collection.breakOut)
 
+    refreshLastPlaylist()
+  }
+
+  def refreshLastPlaylist() = {
     Amplitude.init(obj(
       callbacks = callbacks,
       songs = songs,
@@ -128,17 +134,19 @@ object AudioPlayerView {
     ))
   }
 
-  def play(book:BibleFile, position:Double = 0): Unit = {
+  def play(book:BibleFile, position:Double = 0, autoplay:Boolean = true): Unit = {
     val idx = songs.indexWhere(_.url == book.url)
-    setSongItem.setAttribute("amplitude-song-index", idx.toString)
-    setSongItem.setAttribute("amplitude-playlist", book.version)
-    setSongItem.clickAndTouch()
+    setSongItemPlay.setAttribute("amplitude-song-index", idx.toString)
+    setSongItemPlay.setAttribute("amplitude-playlist", book.version)
+    setSongItemPlay.clickAndTouch()
     Amplitude.audio().currentTime = position
+    if(! autoplay) jQuery(".amplitude-pause")(0).clickAndTouch()
+
   }
 
   private val progress = typedTag[HTMLElement]("progress")
   private val amplitude = new DataAttribute(List("amplitude"))
-  private val setSongItem = span(cls := "amplitude-play", height:="0.1").render
+  private val setSongItemPlay = span(cls := "amplitude-play", height:="0.1").render
 
   private val progressView = progress(
     cls := "amplitude-song-played-progress",
@@ -158,7 +166,7 @@ object AudioPlayerView {
         icon("next", "forward"),
 
         //todo this items are udes only from code. abstract over them?
-        setSongItem,
+        setSongItemPlay,
         div( cls:="amplitude-pause", amplitude.main.play.pause:="true", display.none),
         div( cls:="amplitude-play", amplitude.main.play.pause:="true", display.none),
 

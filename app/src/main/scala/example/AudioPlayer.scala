@@ -1,32 +1,43 @@
 package example
 
 import example.model.BibleFile
-import example.views.{Amplitude, AudioPlayerView}
+import example.utils.Database
+import example.views.AudioPlayerView
 import org.scalajs.dom
 
-import scala.util.Try
-import scalatags.JsDom.all._
-
 object AudioPlayer {
-  var songListeners:Seq[(Option[BibleFile], BibleFile, Boolean) => Any] = Seq.empty
+  /** (old, new, isPlaying) => */
+  type SongListener = (Option[BibleFile], BibleFile, Boolean) => Any
+
+  var songListeners:Seq[SongListener] = Seq.empty
+
+  def addChangeSongListener(s:SongListener) = songListeners :+= s
 
   var last:Option[BibleFile] = None
   var lastIsPlaying:Boolean = false
 
-  def toggle(s:BibleFile):Unit = {
-    AudioPlayerView.logoHover.style.opacity = "0.0"
-    dom.window.setTimeout(() => AudioPlayerView.logoHover.style.display = "none", 2000)
-
-    last match {
-      case Some(l) if l == s =>
-        println("toggle same:" + lastIsPlaying)
-        if (lastIsPlaying) AudioPlayerView.pause() else AudioPlayerView.play(s, Database.position.apply(s))
-        lastIsPlaying = !lastIsPlaying
-      case other =>
-        onSongChange(s, true)
-        AudioPlayerView.play(s, Database.position.apply(s))
-    }
+  def autoShouldPlay(s:BibleFile) = last match {
+    case Some(l) if l == s => !lastIsPlaying
+    case other => true
   }
+
+  def toggle(s:BibleFile)(shouldPlay:Boolean = autoShouldPlay(s)):Unit = {
+    setBibleFile(s)(shouldPlay)
+  }
+
+  def setBibleFile(s:BibleFile)(play:Boolean = autoShouldPlay(s)) = {
+    Database.lastItemUrl.set(s.url)
+    onSongChange(s, play)
+    hideCover()
+    AudioPlayerView.play(s, Database.position.apply(s), play)
+    lastIsPlaying = !lastIsPlaying
+  }
+
+  def hideCover() = {
+    dom.window.setTimeout(() => AudioPlayerView.logoHover.style.display = "none", 1000)
+    AudioPlayerView.logoHover.style.opacity = "0.0"
+  }
+
 
   def onSongChange(to:BibleFile, isPlaying:Boolean) = {
     lastIsPlaying = isPlaying
@@ -36,30 +47,4 @@ object AudioPlayer {
   }
 
   def pause() = AudioPlayerView.pause()
-}
-
-class DBAccessor[T, V](name:String, key:T => String, v2s:V => String, s2v:String => V, default:V) {
-  def set(a:T, v:V) = {
-    dom.window.localStorage.setItem(name+ "-" + key(a), v2s(v))
-  }
-
-  def get(a:T):Option[V] = Try(
-    s2v(dom.window.localStorage.getItem(name+ "-" + key(a)))
-  ).toOption
-
-  def apply(a:T):V = Try(
-    s2v(dom.window.localStorage.getItem(name+ "-" + key(a)))
-  ).getOrElse(default)
-
-
-}
-
-object Database {
-  object position extends DBAccessor[BibleFile, Double](
-    "position",
-    key = _.url,
-    v2s = _.toString,
-    s2v = _.toDouble,
-    default = 0
-  )
 }

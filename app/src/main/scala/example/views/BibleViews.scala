@@ -156,7 +156,7 @@ class BibleFileView(val b:BibleFile) {
         i(cls := "fa fa-clock-o", aria.hidden := "true"),
         p(b.name, cls := "duration")
       ),
-      onclick := { () => AudioPlayer.toggle(b) },
+      onclick := { () => AudioPlayer.toggle(b)() },
       p("", clear := "both", margin := "0 0")
     ).render
   }
