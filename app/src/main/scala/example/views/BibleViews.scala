@@ -2,8 +2,11 @@ package example.views
 
 import example.AudioPlayer
 import example.model.{Bible, BibleFile, BibleTestament, Book}
+import example.utils.Bootstrap
 import org.scalajs.dom.html.Div
 import example.utils.Implicits._
+import org.scalajs.dom.raw.HTMLElement
+
 import scalatags.JsDom
 import scalatags.JsDom.all._
 import org.scalajs.jquery.jQuery
@@ -111,17 +114,8 @@ case class BookView(b:Book, color:String) {
   val fileViews = b.files.map(s => new BibleFileView(s))
 
   val view: JsDom.TypedTag[Div] = {
-    val cid = "chapter-" + b.short.hashCode
-    val chapters = div(
-      id:=cid,
-      cls:="collapse",
-      fileViews.map(_.view)
-    ).render
-
     val header = div(
-      data.toggle := "collapse",
-      data.target := "#" + cid,
-      cls := "bookHeader collapsed",
+      cls := "bookHeader",
       div(cls := "shortIcon", backgroundColor := color,
         p(b.short, cls := "shortBook")
       ),
@@ -129,11 +123,11 @@ case class BookView(b:Book, color:String) {
       div(clear := "both")
     ).render
 
-    div(
-      header,
-      chapters,
-      p("", clear := "both", margin := "0 0")
-    )
+    val chapters = div(
+      id:="chapter-" + b.short.hashCode, fileViews.map(_.view)
+    ).render
+
+    div(Bootstrap.collapse(header, chapters))
   }
 }
 
