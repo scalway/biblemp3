@@ -267,7 +267,7 @@ div#stickyMenu {
 .amplitude-button {
     color:white;
     font-size: 25px;
-    margin: 15px;
+    margin: 15px 10px;
 }
 
 div#single-song-player img[amplitude-song-info="cover_art_url"] {
@@ -399,4 +399,25 @@ div.hover {
 
 div.hover * {
     height:90%;
+}
+
+#app-control-panel-box {
+    text-align: center;
+    margin: auto;
+    background: rgb(44, 46, 70);
+    box-shadow: rgba(0, 0, 0, 0.35) 2px 2px 2px 1px inset;
+}
+
+div.app-control-panel {
+    display: inline-flex;
+}
+
+.app-amplitude-button-text {
+    border-radius: 0.81em;
+    box-shadow: 3px 3px 5px black;
+    background: white;
+    color: black;
+    padding: 0.3em;
+    font-size: 1.35em;
+    cursor: pointer;
 }

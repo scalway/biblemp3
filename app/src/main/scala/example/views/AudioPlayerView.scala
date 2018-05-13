@@ -1,7 +1,8 @@
 package example.views
 import example.AudioPlayer
 import example.model.BibleFile
-import example.utils.Database
+import example.utils.{Bootstrap, Database, Fa}
+import example.views.AudioPlayerView.icon
 import org.scalajs.dom
 import org.scalajs.dom.html.{Audio, Div}
 import org.scalajs.dom.raw.{Event, HTMLElement, MouseEvent}
@@ -12,6 +13,7 @@ import org.scalajs.jquery.{JQuery, jQuery}
 
 import scala.scalajs.js.{Dynamic, UndefOr}
 import scala.scalajs.js.annotation.ScalaJSDefined
+import scalatags.JsDom
 
 @js.native
 object Amplitude extends js.Any {
@@ -54,7 +56,7 @@ trait AmplitudeCallbacks extends js.Object {
 }
 
 object AudioPlayerView {
-    //TODO move it out
+  //TODO move it out
   implicit class HtmlOps(val a:HTMLElement) {
     def clickAndTouch(): Boolean = {
       a.click()
@@ -140,10 +142,13 @@ object AudioPlayerView {
     setSongItemPlay.setAttribute("amplitude-playlist", book.version)
     setSongItemPlay.clickAndTouch()
     val audio1 = Amplitude.audio()
+    audio1.currentTime = position
     audio1.addEventListener("loadeddata", (e:Event) => {
       audio1.currentTime = position
     })
-    if(! autoplay) jQuery(".amplitude-pause")(0).clickAndTouch()
+    if(! autoplay) dom.window.setTimeout( () =>
+      amplitudePauseBtn.clickAndTouch()
+    ,100)
 
   }
 
@@ -158,33 +163,55 @@ object AudioPlayerView {
   ).render
 
   def icon(name:String, icon:String) = div( cls:=("amplitude-button amplitude-" + name), i(cls:=("fa fa-" + icon)))
+  def fa(icon:String) = div(cls:="amplitude-button", i(cls:=("fa fa-" + icon)))
+  def scrollBtn(time:Double) = div(cls:="amplitude-button app-amplitude-button-text", onclick := { () =>
+    Amplitude.audio().currentTime = Amplitude.audio().currentTime + time
+  })
+
   val logoHover: Div = div(cls:="hover", img(src:="assets/images/logo_01.png")).render
+
+  private val amplitudePauseBtn = div(cls := "amplitude-pause", amplitude.main.play.pause := "true", display.none).render
+
+  private val controlPanel = div(
+    textAlign.center, margin.auto,
+    id:= "app-control-panel-box",
+    div(
+      cls := "app-control-panel",
+      icon("prev", "backward"),
+      icon("stop", "stop"),
+      scrollBtn(-30)("-30s"),
+      scrollBtn(-10)("-10s"),
+      scrollBtn(10)("+10s"),
+      scrollBtn(30)("+30s"),
+      icon("next", "forward"),
+      //todo this items are udes only from code. abstract over them?
+      setSongItemPlay,
+      amplitudePauseBtn,
+      div( cls:="amplitude-play", amplitude.main.play.pause:="true", display.none),
+    )
+  ).render
+
+  val menuView = fa("thumb-tack").render
 
   val view: Div = div( id:="single-song-player",
     div( cls:="bottom-container",
       div( cls:="control-container",
-        icon("prev", "backward"),
-        icon("stop", "stop"),
+        menuView,
         div( cls:="amplitude-play-pause", amplitude.main.play.pause:="true", id:="play-pause"),
-        icon("next", "forward"),
-
-        //todo this items are udes only from code. abstract over them?
-        setSongItemPlay,
-        div( cls:="amplitude-pause", amplitude.main.play.pause:="true", display.none),
-        div( cls:="amplitude-play", amplitude.main.play.pause:="true", display.none),
-
         div( cls:="meta-container",
           span( amplitude.song.info:="name", amplitude.main.song.info:="true", cls:="song-name"),
           span( amplitude.song.info:="artist", amplitude.main.song.info:="true")
         )
       ),
 
+      controlPanel,
+
       div( cls:="time-container",
         span( cls:="current-time",
-          span( cls:="amplitude-current-minutes", amplitude.main.current.minutes:="true"),":",span( cls:="amplitude-current-seconds", amplitude.main.current.seconds:="true")
+          span( cls:="amplitude-current-hours", amplitude.main.current.hours:="true"),":", span( cls:="amplitude-current-minutes", amplitude.main.current.minutes:="true"),":",span( cls:="amplitude-current-seconds", amplitude.main.current.seconds:="true")
         ),
         span( cls:="duration",
-          span( cls:="amplitude-duration-minutes", amplitude.main.duration.minutes:="true"),":",span( cls:="amplitude-duration-seconds", amplitude.main.duration.seconds:="true")
+          span( cls:="amplitude-duration-hours", amplitude.main.duration.hours:="true"),":", span( cls:="amplitude-duration-minutes", amplitude.main.duration.minutes:="true"),":",span( cls:="amplitude-duration-seconds", amplitude.main.duration.seconds:="true")
         )
       ),
       progressView,
@@ -192,9 +219,14 @@ object AudioPlayerView {
     )
   ).render
 
+  Bootstrap.collapse(menuView, controlPanel)
+
   progressView.addEventListener("click", (e:MouseEvent) => {
     val offset = progressView.getBoundingClientRect()
     val x = e.pageX - offset.left
-    Amplitude.setSongPlayedPercentage(x / progressView.offsetWidth * 100 )
+
+    val progress = x / progressView.offsetWidth
+    progressView.setAttribute("value", progress.toString)
+    Amplitude.setSongPlayedPercentage(progress * 100)
   })
 }

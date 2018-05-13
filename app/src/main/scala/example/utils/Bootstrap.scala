@@ -15,3 +15,13 @@ object Bootstrap {
     Seq(header, toCollapse)
   }
 }
+
+object Fa {
+  import scalatags.JsDom.all._
+
+  def stack(icon:String, text:String, marginTopInj:Double = 0.0) = span(
+    cls:="fa-stack",
+    i(cls:=s"fa fa-stack-2x fa-$icon"),
+    strong(cls:="fa-stack-1x", marginTop := marginTopInj, text, color.black)
+  )
+}
