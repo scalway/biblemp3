@@ -1,19 +1,16 @@
 package example.views
-import example.AudioPlayer
+import example.{AudioPlayer, Hello}
 import example.model.BibleFile
-import example.utils.{Bootstrap, Database, Fa}
-import example.views.AudioPlayerView.icon
+import example.utils.{Bootstrap, Database}
 import org.scalajs.dom
 import org.scalajs.dom.html.{Audio, Div}
 import org.scalajs.dom.raw.{Event, HTMLElement, MouseEvent}
+import org.scalajs.jquery.jQuery
 
 import scala.scalajs.js
-import scalatags.JsDom.all.{span, _}
-import org.scalajs.jquery.{JQuery, jQuery}
-
-import scala.scalajs.js.{Dynamic, UndefOr}
 import scala.scalajs.js.annotation.ScalaJSDefined
-import scalatags.JsDom
+import scala.scalajs.js.{Dynamic, UndefOr}
+import scalatags.JsDom.all.{span, _}
 
 @js.native
 object Amplitude extends js.Any {
@@ -95,8 +92,13 @@ object AudioPlayerView {
 
     time_update = sjsFunction(() =>
       getCurrentSongFile.foreach { s =>
-        dom.console.warn("time_update")
-        Database.position.set(s, Amplitude.audio().currentTime)
+        val position = Amplitude.audio().currentTime
+        if (position > 0.0) {
+          dom.console.warn("time_update: " + s + " position: " + position)
+          Database.position.set(s, position)
+        } else {
+          dom.console.warn("time_update: " + s + " position (not save): " + position)
+        }
       }
     )
   }
@@ -193,18 +195,26 @@ object AudioPlayerView {
 
   val menuView = fa("thumb-tack").render
 
+  private val metaContainerView = div(cls := "meta-container",
+    span(amplitude.song.info := "name", amplitude.main.song.info := "true", cls := "song-name"),
+    span(amplitude.song.info := "artist", amplitude.main.song.info := "true"),
+    onclick := { () =>
+      //TODO just emit event instead
+      getCurrentSongFile.foreach{ s =>
+        Hello.otView.show(s)
+        Hello.ntView.show(s)
+      }
+    }
+  ).render
+
   val view: Div = div( id:="single-song-player",
     div( cls:="bottom-container",
       div( cls:="control-container",
         menuView,
         div( cls:="amplitude-play-pause", amplitude.main.play.pause:="true", id:="play-pause"),
-        div( cls:="meta-container",
-          span( amplitude.song.info:="name", amplitude.main.song.info:="true", cls:="song-name"),
-          span( amplitude.song.info:="artist", amplitude.main.song.info:="true")
-        )
+        metaContainerView
       ),
 
-      controlPanel,
 
       div( cls:="time-container",
         span( cls:="current-time",
@@ -215,6 +225,7 @@ object AudioPlayerView {
         )
       ),
       progressView,
+      controlPanel,
       logoHover
     )
   ).render

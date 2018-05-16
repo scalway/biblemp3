@@ -6,7 +6,9 @@ import example.views.{AudioPlayerView, BibleTestamentView, BibleViews, InfoView}
 import org.scalajs.dom
 import org.scalajs.dom.html.Div
 
+import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
+import scala.util.Try
 import scalatags.JsDom.all._
 
 @JSExportTopLevel("example.Hello")
@@ -39,9 +41,13 @@ object Hello {
       { () =>
         Database.lastItemUrl.get().flatMap { url =>
           Bible.all.files.find(_.url == url)
-        }.map(s => AudioPlayer.toggle(s)(false))
+        }.map {  s =>
+          AudioPlayer.toggle(s)(false)
+          Hello.otView.show(s)
+          Hello.ntView.show(s)
+        }
       },
-      1000
+      400
     )
   }
 

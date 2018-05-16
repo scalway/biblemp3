@@ -29,7 +29,7 @@ object AudioPlayer {
     Database.lastItemUrl.set(s.url)
     onSongChange(s, play)
     hideCover()
-    AudioPlayerView.play(s, Database.position.apply(s), play)
+    AudioPlayerView.play(s, Database.position.get(s).filter(_ < s.timeReal - 4).getOrElse(0), play)
     lastIsPlaying = !lastIsPlaying
   }
 

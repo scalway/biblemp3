@@ -3,13 +3,13 @@ package example.views
 import example.AudioPlayer
 import example.model.{Bible, BibleFile, BibleTestament, Book}
 import example.utils.Bootstrap
-import org.scalajs.dom.html.Div
 import example.utils.Implicits._
-import org.scalajs.dom.raw.HTMLElement
-
-import scalatags.JsDom
-import scalatags.JsDom.all._
+import org.scalajs.dom
+import org.scalajs.dom.html.Div
 import org.scalajs.jquery.jQuery
+
+import scala.scalajs.js
+import scalatags.JsDom.all._
 
 object View {
   val stid = Bible.ot.name.hashCode
@@ -101,6 +101,21 @@ class BibleTestamentView(b:BibleTestament, colors:Seq[String]) {
 
   val booksViews = b.books.map(s => new BookView(s, colorMapping(s.group)))
 
+  def show(ref:BibleFile) = {
+    println("show:" + ref)
+
+    val idx = b.books.indexWhere(b => b.files.contains(ref))
+    if (idx >= 0) {
+      //select proper tab
+      jQuery(s".nav-tabs a[href='#${b.name.hashCode}']").asInstanceOf[js.Dynamic].tab("show")
+      //scroll to proper item
+      val bookV = booksViews(idx)
+      jQuery(bookV.chapters).asInstanceOf[js.Dynamic].collapse("show")
+      bookV.header.smothScrollToTopJQ(300, dom.document.body.parentElement)
+
+    }
+  }
+
   val view: Div = {
     div(
       id := b.name.hashCode,
@@ -113,22 +128,20 @@ class BibleTestamentView(b:BibleTestament, colors:Seq[String]) {
 case class BookView(b:Book, color:String) {
   val fileViews = b.files.map(s => new BibleFileView(s))
 
-  val view: JsDom.TypedTag[Div] = {
-    val header = div(
-      cls := "bookHeader",
-      div(cls := "shortIcon", backgroundColor := color,
-        p(b.short, cls := "shortBook")
-      ),
-      div(cls := "bookName", p(b.name, cls := "bookNameText")),
-      div(clear := "both")
-    ).render
+  val header = div(
+    cls := "bookHeader",
+    div(cls := "shortIcon", backgroundColor := color,
+      p(b.short, cls := "shortBook")
+    ),
+    div(cls := "bookName", p(b.name, cls := "bookNameText")),
+    div(clear := "both")
+  ).render
 
-    val chapters = div(
-      id:="chapter-" + b.short.hashCode, fileViews.map(_.view)
-    ).render
+  val chapters = div(
+    id:="chapter-" + b.short.hashCode, fileViews.map(_.view)
+  ).render
 
-    div(Bootstrap.collapse(header, chapters))
-  }
+  val view = div(Bootstrap.collapse(header, chapters)).render
 }
 
 
