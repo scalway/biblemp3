@@ -1,7 +1,7 @@
 package example.views
 
-import example.AudioPlayer
 import example.model.{Bible, BibleFile, BibleTestament, Book}
+import example.player.AudioPlayer
 import example.utils.Bootstrap
 import example.utils.Implicits._
 import org.scalajs.dom
@@ -94,12 +94,12 @@ class BibleViews {
   }
 }
 
-class BibleTestamentView(b:BibleTestament, colors:Seq[String]) {
+class BibleTestamentView(b:BibleTestament, colors:Seq[String], player:AudioPlayer) {
   val colorMapping =
     b.books.groupByOrdered(_.group).map(_._1).zip(colors).toMap
     .withDefaultValue("gray")
 
-  val booksViews = b.books.map(s => new BookView(s, colorMapping(s.group)))
+  val booksViews = b.books.map(s => new BookView(s, colorMapping(s.group), player))
 
   def show(ref:BibleFile) = {
     println("show:" + ref)
@@ -125,8 +125,8 @@ class BibleTestamentView(b:BibleTestament, colors:Seq[String]) {
   }
 }
 
-case class BookView(b:Book, color:String) {
-  val fileViews = b.files.map(s => new BibleFileView(s))
+case class BookView(b:Book, color:String, player:AudioPlayer) {
+  val fileViews = b.files.map(s => new BibleFileView(s, player))
 
   val header = div(
     cls := "bookHeader",
@@ -145,7 +145,7 @@ case class BookView(b:Book, color:String) {
 }
 
 
-class BibleFileView(val b:BibleFile) {
+class BibleFileView(val b:BibleFile, player: example.player.AudioPlayer) {
   val icon = i(cls := "fa fa-play").render
 
   def setPlaying(a:Option[Boolean]) = {
@@ -163,7 +163,7 @@ class BibleFileView(val b:BibleFile) {
         i(cls := "fa fa-clock-o", aria.hidden := "true"),
         p(b.time, cls := "duration")
       ),
-      onclick := { () => AudioPlayer.toggle(b)() },
+      onclick := { () => player.actions.toggle(b) },
       p("", clear := "both", margin := "0 0")
     ).render
   }

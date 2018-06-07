@@ -1,5 +1,6 @@
 package example.utils
 
+import example.utils.implicits.RxImplicits
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
 import org.scalajs.jquery.jQuery
@@ -11,7 +12,7 @@ import scala.scalajs.js.Dynamic
 
 
 
-object Implicits {
+object Implicits extends RxImplicits {
   val obj = scalajs.js.Dynamic.literal
 
   class GroupByOrderedImplicitImpl[A](val t: Traversable[A]) extends AnyVal {
@@ -46,5 +47,10 @@ object Implicits {
       }
       a
     }
+  }
+
+
+  implicit class ExtensionToAnything[T](a:T) {
+    @inline def === (b:T) = a == b
   }
 }

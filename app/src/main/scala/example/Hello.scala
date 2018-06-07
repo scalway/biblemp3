@@ -1,10 +1,12 @@
 package example
 
 import example.model.{Bible, BibleFile}
+import example.player.view.AudioPlayerView
 import example.utils.Database
-import example.views.{AudioPlayerView, BibleTestamentView, BibleViews, InfoView}
+import example.views.{BibleTestamentView, BibleViews, InfoView}
 import org.scalajs.dom
 import org.scalajs.dom.html.Div
+import org.scalajs.dom.raw.HTMLElement
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
@@ -21,33 +23,46 @@ object Hello {
 
   @JSExport
   def main(args: Array[String] = Array.empty): Unit = {
-    dom.document.body.innerHTML = ""
-    dom.document.body.appendChild(view)
 
-    AudioPlayer.addChangeSongListener { (old, newB, isPlaying) =>
+    val audioPlayer = new player.AudioPlayer()
+    val audioPlayerPrinter = new player.AudioPlayerDebug(audioPlayer)
+    val audioPlayerView = new AudioPlayerView(audioPlayer)
+    audioPlayer.actions.setPlaylist(Bible.all.files, 0)
 
-      println("song changed from = " + old)
-      println(s"song changed to ($isPlaying) = " + newB)
-      val oldB = old.getOrElse(BibleFile.empty)
+    val ntView = new BibleTestamentView(Bible.nt, colorsNT, audioPlayer)
+    val otView = new BibleTestamentView(Bible.ot, colorsST, audioPlayer)
+    ntView.view.classList.add("active")
+
+    var oldSong = BibleFile.empty
+    (audioPlayer.data.song combineLatest audioPlayer.data.isPlaying).subscribe { (t:(BibleFile, Boolean)) =>
+      val data = t._1
       val all = ntView.booksViews.flatMap(_.fileViews) ++ otView.booksViews.flatMap(_.fileViews)
-      all.collect { case x if x.b.url == oldB.url => x.setPlaying(None) }
-      all.collect { case x if x.b.url == newB.url => x.setPlaying(Some(isPlaying)) }
+      all.collect { case x if x.b.url == oldSong.url => x.setPlaying(None) }
+      all.collect { case x if x.b.url == data.url => x.setPlaying(Some(t._2)) }
+      oldSong = data
     }
 
-    ntView.view.classList.add("active")
-    AudioPlayerView.setPlaylist(Bible.all.files)
 
-    dom.window.setTimeout(
-      { () =>
+    //read last item
+    dom.window.setTimeout({ () =>
         Database.lastItemUrl.get().flatMap { url =>
           Bible.all.files.find(_.url == url)
         }.map {  s =>
-          AudioPlayer.toggle(s)(false)
-          Hello.otView.show(s)
-          Hello.ntView.show(s)
+          audioPlayer.actions.toggle(s, false)
+          otView.show(s)
+          ntView.show(s)
         }
       },
       400
+    )
+
+    dom.document.body.innerHTML = ""
+    dom.document.body.appendChild(
+      createView(
+        audioPlayerView.view,
+        ntView.view,
+        otView.view
+      )
     )
   }
 
@@ -60,18 +75,17 @@ object Hello {
     p("Biblia-mp3 2018")
   ).render
 
-  val ntView = new BibleTestamentView(Bible.nt, colorsNT)
-  val otView = new BibleTestamentView(Bible.ot, colorsST)
 
-  val view: Div = div(
+
+  def createView(player:HTMLElement, ntView:HTMLElement, otView:HTMLElement): Div = div(
     header,
     div(id := "stickyMenu",
-      AudioPlayerView.view,
+      player,
       new BibleViews().view
     ),
     div(cls := "tab-content",
-      ntView.view,
-      otView.view,
+      ntView,
+      otView,
       div(id := "app-info", cls := "tab-pane", new InfoView().view)
     ),
     footer

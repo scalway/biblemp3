@@ -2,6 +2,8 @@ package example.model
 import example.BibleMp3Data
 import example.utils.Implicits._
 
+import scala.util.Try
+
 case class Bible(nt:BibleTestament, ot:BibleTestament) {
   def all = BibleTestament("", ot.files ++ nt.files)
 }
@@ -44,6 +46,8 @@ case class BibleFile(
     case Array(s) => s.toDouble
     case other => 0.01
   }
+
+  def tryTimeReal = Try(timeReal).getOrElse(0.02)
 }
 
 object BibleFile {

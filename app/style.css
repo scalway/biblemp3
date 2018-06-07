@@ -355,14 +355,14 @@ div#single-song-player div.bottom-container div.control-container div.meta-conta
   margin-top: 10px;
 }
 
-div.meta-container span[amplitude-song-info="name"] {
+.player-song-title {
   font-family: "Open Sans", sans-serif;
   font-size: 24px;
   color: #fff;
   display: block;
 }
 
-div#single-song-player div.bottom-container div.control-container div.meta-container span[amplitude-song-info="artist"] {
+.player-song-artist {
   font-family: "Open Sans", sans-serif;
   font-weight: 100;
   font-size: 18px;
