@@ -38,7 +38,9 @@ object Hello {
     ntView.view.classList.add("active")
 
     var oldSong = BibleFile.empty
-    val allBookFiles = ntView.booksViews.flatMap(_.fileViews) ++ otView.booksViews.flatMap(_.fileViews)
+
+    val allBooks = ntView.booksViews ++ otView.booksViews
+    val allBookFiles = allBooks.flatMap(_.fileViews)
     (audioPlayer.data.song combineLatest audioPlayer.data.isPlaying).subscribe { (t:(BibleFile, Boolean)) =>
       val data = t._1
 
@@ -49,8 +51,11 @@ object Hello {
 
     Database.position.stream.subscribe { t =>
       val (b, time) = t
-      allBookFiles.find(b === _.file).map(_.view.style.setProperty("--proc", 100 * b.progressOf(time)  + "%"))
-
+      allBookFiles.find(b === _.file).foreach(_.view.style.setProperty("--proc", 100 * b.progressOf(time)  + "%"))
+      //set gray bar to notify that book was started!
+      if (time>0) allBooks.find(_.fileViews.exists(_.file === b)).foreach { b =>
+        b.header.firstElementChild.asInstanceOf[HTMLElement].style.borderLeft = "6px solid gray"
+      }
     }
 
     audioPlayerView.metaContainerView.onclick = { (e:Event) =>
