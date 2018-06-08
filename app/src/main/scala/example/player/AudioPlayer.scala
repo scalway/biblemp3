@@ -8,7 +8,6 @@ import scalatags.JsDom.all._
 import example.utils.Implicits._
 import org.scalajs.dom
 import rxscalajs.Observable
-import rxscalajs.subscription.Subscription
 
 case class State(playlist:Seq[BibleFile], songIndex:Int) {
   lazy val song = playlist.lift(songIndex).getOrElse(BibleFile.empty)

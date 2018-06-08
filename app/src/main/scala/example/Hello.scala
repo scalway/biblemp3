@@ -9,11 +9,10 @@ import org.scalajs.dom
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.HTMLElement
 
-import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
-import scala.util.Try
 import scalatags.JsDom.all._
 import example.utils.Implicits._
+import org.scalajs.dom.Event
 
 @JSExportTopLevel("example.Hello")
 object Hello {
@@ -46,19 +45,23 @@ object Hello {
       oldSong = data
     }
 
+    audioPlayerView.metaContainerView.onclick = { (e:Event) =>
+      val song = audioPlayer.state.getValue().song
+      otView.show(song)
+      ntView.show(song)
+    }
+
 
     //read last item
     dom.window.setTimeout({ () =>
-        Database.lastItemUrl.get().flatMap { url =>
-          Bible.all.files.find(_.url === url)
-        }.map {  s =>
-          audioPlayer.actions.setSong(s, false)
-          otView.show(s)
-          ntView.show(s)
-        }
-      },
-      400
-    )
+      Database.lastItemUrl.get().flatMap { url =>
+        Bible.all.files.find(_.url === url)
+      }.map {  s =>
+        audioPlayer.actions.setSong(s, false)
+        otView.show(s)
+        ntView.show(s)
+      }
+    },400)
 
     dom.document.body.innerHTML = ""
     dom.document.body.appendChild(

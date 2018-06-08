@@ -43,16 +43,9 @@ class AudioPlayerView(val player:AudioPlayer) extends PlayerShortcuts {
 
   val menuView = fa("thumb-tack").render
 
-  private val metaContainerView = div(cls := "meta-container",
+  val metaContainerView = div(cls := "meta-container",
     span(cls:="player-song-title", *.song.map(_.book)),
     span(cls:="player-song-artist", *.song.map(_.versionPartName)),
-//    onclick := { () =>
-//      //TODO just emit event instead
-//      getCurrentSongFile.foreach{ s =>
-//        Hello.otView.show(s)
-//        Hello.ntView.show(s)
-//      }
-//    }
   ).render
 
   val view: Div = div( id:="single-song-player",
