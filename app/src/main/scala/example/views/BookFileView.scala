@@ -1,6 +1,7 @@
 package example.views
 
 import example.model.BibleFile
+import example.utils.Database
 import org.scalajs.dom.html.Div
 
 import scalatags.JsDom.all._
@@ -24,7 +25,7 @@ class BibleFileView(val b:BibleFile, player: example.player.AudioPlayer) {
         i(cls := "fa fa-clock-o", aria.hidden := "true"),
         p(b.time, cls := "duration")
       ),
-      onclick := { () => player.actions.toggle(b) },
+      onclick := { () => player.actions.toggle(b, true, Database.position(b)) },
       p("", clear := "both", margin := "0 0")
     ).render
   }

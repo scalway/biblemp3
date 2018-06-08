@@ -1,6 +1,7 @@
 package example
 
 import example.model.{Bible, BibleFile}
+import example.player.AudioPlayerDatabaseIntegration
 import example.player.view.AudioPlayerView
 import example.utils.Database
 import example.views.{BibleTestamentView, BibleViews, InfoView}
@@ -12,6 +13,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scala.util.Try
 import scalatags.JsDom.all._
+import example.utils.Implicits._
 
 @JSExportTopLevel("example.Hello")
 object Hello {
@@ -27,7 +29,9 @@ object Hello {
     val audioPlayer = new player.AudioPlayer()
     val audioPlayerPrinter = new player.AudioPlayerDebug(audioPlayer)
     val audioPlayerView = new AudioPlayerView(audioPlayer)
-    audioPlayer.actions.setPlaylist(Bible.all.files, 0)
+
+    val apDb = new AudioPlayerDatabaseIntegration(audioPlayer)
+    apDb.init(Bible.all.files)
 
     val ntView = new BibleTestamentView(Bible.nt, colorsNT, audioPlayer)
     val otView = new BibleTestamentView(Bible.ot, colorsST, audioPlayer)
@@ -46,9 +50,9 @@ object Hello {
     //read last item
     dom.window.setTimeout({ () =>
         Database.lastItemUrl.get().flatMap { url =>
-          Bible.all.files.find(_.url == url)
+          Bible.all.files.find(_.url === url)
         }.map {  s =>
-          audioPlayer.actions.toggle(s, false)
+          audioPlayer.actions.setSong(s, false)
           otView.show(s)
           ntView.show(s)
         }

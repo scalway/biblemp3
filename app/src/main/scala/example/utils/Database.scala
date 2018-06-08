@@ -9,7 +9,10 @@ import upickle.default._
 
 object Database {
   class DBAccessorOne[T](name:String, v2s:T => String, s2v:String => T, default:T) {
-    def set(a:T) = dom.window.localStorage.setItem(name, v2s(a))
+    def set(a:T) = {
+      dom.console.warn(s"$name.set($a)")
+      dom.window.localStorage.setItem(name, v2s(a))
+    }
     def get():Option[T] = Try(s2v(dom.window.localStorage.getItem(name))).toOption
     def apply():T = Try(s2v(dom.window.localStorage.getItem(name))).getOrElse(default)
   }
