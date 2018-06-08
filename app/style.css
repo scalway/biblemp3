@@ -50,13 +50,17 @@ body {
 }
 
 .chapter {
+    --current-bg-dark: #eaf3f9;
+    --current-bg-light: transparent;
+    background: linear-gradient(to right, var(--current-bg-dark) var(--proc, 0%), var(--current-bg-light) var(--proc, 0%));
     transition: background-color 0.5s ease;
     border-bottom: solid 1px #d6d6d6;
     padding: 0.5em;
 }
 
 .chapter:hover {
-    background-color: #e1eaef;
+    --current-bg-dark: #d7dfea;
+    --current-bg-light: #eaf3f9;
     cursor: pointer;
 }
 

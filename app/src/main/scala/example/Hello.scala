@@ -16,6 +16,7 @@ import org.scalajs.dom.Event
 
 @JSExportTopLevel("example.Hello")
 object Hello {
+
   def hello(name:String) = {
     val msg = s"Hello, $name!"
     dom.document.body.innerHTML = msg
@@ -37,12 +38,19 @@ object Hello {
     ntView.view.classList.add("active")
 
     var oldSong = BibleFile.empty
+    val allBookFiles = ntView.booksViews.flatMap(_.fileViews) ++ otView.booksViews.flatMap(_.fileViews)
     (audioPlayer.data.song combineLatest audioPlayer.data.isPlaying).subscribe { (t:(BibleFile, Boolean)) =>
       val data = t._1
-      val all = ntView.booksViews.flatMap(_.fileViews) ++ otView.booksViews.flatMap(_.fileViews)
-      all.collect { case x if x.b.url == oldSong.url => x.setPlaying(None) }
-      all.collect { case x if x.b.url == data.url => x.setPlaying(Some(t._2)) }
+
+      allBookFiles.collect { case x if x.file.url == oldSong.url => x.setPlaying(None) }
+      allBookFiles.collect { case x if x.file.url == data.url => x.setPlaying(Some(t._2)) }
       oldSong = data
+    }
+
+    Database.position.stream.subscribe { t =>
+      val (b, time) = t
+      allBookFiles.find(b === _.file).map(_.view.style.setProperty("--proc", 100 * b.progressOf(time)  + "%"))
+
     }
 
     audioPlayerView.metaContainerView.onclick = { (e:Event) =>
@@ -71,6 +79,8 @@ object Hello {
         otView.view
       )
     )
+
+    Database.position.init(Bible.all.files)
   }
 
   val colorsST = Seq("#e00b3c", "#9a13dd", "#1357dd", "#13ddae", "#13b5dd")

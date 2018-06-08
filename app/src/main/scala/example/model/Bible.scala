@@ -1,5 +1,6 @@
 package example.model
 import example.BibleMp3Data
+import example.player.Song
 import example.utils.Implicits._
 
 import scala.util.Try
@@ -39,10 +40,12 @@ case class BibleFile(
                       versionPartName:String,
                       time:String,
                       bookKind:String
-                    ) {
+                    ) extends Song {
+  def progressOf(time: Double) = Math.max(0, Math.min(1, time / timeReal))
+
   lazy val timeReal:Double = time.split(":") match {
-    case Array(h, m, s) => 3600*h.toInt + m.toInt * 60.toInt + s.toDouble
-    case Array(m, s) =>  60.toInt + s.toDouble
+    case Array(h, m, s) => 3600 * h.toInt + m.toInt * 60 + s.toDouble
+    case Array(m, s) =>  (m.toInt * 60) + s.toDouble
     case Array(s) => s.toDouble
     case other => 0.01
   }
