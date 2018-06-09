@@ -23,5 +23,6 @@ class ProgressSeek(val player:AudioPlayer) extends PlayerShortcuts {
 
     val progress = x / view.offsetWidth
     player.actions.setPositionPercentage(progress)
+    view.asInstanceOf[js.Dynamic].value = progress
   }
 }
