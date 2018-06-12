@@ -1,14 +1,14 @@
-package example.views
+package example.views.player
 
 import example.model.{BibleFile, BibleTestament}
 import example.player.AudioPlayer
+import example.utils.Implicits._
 import org.scalajs.dom
 import org.scalajs.dom.html.Div
 import org.scalajs.jquery.jQuery
 
 import scala.scalajs.js
 import scalatags.JsDom.all._
-import example.utils.Implicits._
 
 class BibleTestamentView(b:BibleTestament, colors:Seq[String], player:AudioPlayer) {
   val colorMapping =
@@ -27,7 +27,7 @@ class BibleTestamentView(b:BibleTestament, colors:Seq[String], player:AudioPlaye
       //scroll to proper item
       val bookV = booksViews(idx)
       jQuery(bookV.chapters).asInstanceOf[js.Dynamic].collapse("show")
-      bookV.header.smothScrollToTopJQ(300, dom.document.body.parentElement)
+      bookV.header.view.smothScrollToTopJQ(300, dom.document.body.parentElement)
 
     }
   }
