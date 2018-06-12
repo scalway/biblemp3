@@ -8,6 +8,7 @@ import example.views.InfoView
 
 import scalatags.JsDom.all._
 import example.utils.Implicits._
+import rxscalajs.Observable
 
 class BibleFileSelectorView(audioPlayer:AudioPlayer) {
   val colorsST = Seq("#e00b3c", "#9a13dd", "#1357dd", "#13ddae", "#13b5dd")
@@ -29,18 +30,10 @@ class BibleFileSelectorView(audioPlayer:AudioPlayer) {
     val infoTab = tab(info.icon, div(id := "app-info", cls := "tab-pane", info.view).render)
     //ugly :(
     infoTab.headerView.classList.add("infoTab")
-
   }
 
   val allBooks = nt.booksViews ++ ot.booksViews
   val allBookFiles = allBooks.flatMap(_.fileViews)
-
-  def connectWithDatabase() = {
-    Database.position.stream.subscribe { t =>
-      val (file, time) = t
-      setTime(file, time)
-    }
-  }
 
   def init() = {
     var oldSong = BibleFile.empty
@@ -53,7 +46,6 @@ class BibleFileSelectorView(audioPlayer:AudioPlayer) {
       oldSong = current
     }
 
-    connectWithDatabase()
     nt.view.classList.add("active")
   }
 
@@ -62,6 +54,13 @@ class BibleFileSelectorView(audioPlayer:AudioPlayer) {
 
     //set gray bar to notify that book was started!
     allBooks.find(_.containsBook(file)).foreach(_.header.markAsStarted(time > 0))
+  }
+
+  def connectWithDatabaseTimes(db:Observable[(BibleFile, Double)]) = {
+    db.subscribe { t =>
+      val (file, time) = t
+      setTime(file, time)
+    }
   }
 
   def show(song: BibleFile) = {

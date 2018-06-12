@@ -7,7 +7,6 @@ import example.utils.Database
 import example.utils.Implicits._
 import example.views.player.BibleFileSelectorView
 import org.scalajs.dom.Event
-import rxscalajs.Observable
 
 import scalatags.JsDom.all._
 
@@ -22,6 +21,7 @@ class MainPlayerComponent {
 
   val bibleList = new BibleFileSelectorView(audioPlayer)
   bibleList.init()
+  bibleList.connectWithDatabaseTimes(Database.position.stream)
 
   audioPlayerView.metaContainerView.onclick = { (e:Event) =>
     val song = audioPlayer.state.getValue().song
