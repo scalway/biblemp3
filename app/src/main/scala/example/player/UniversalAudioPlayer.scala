@@ -34,6 +34,8 @@ class UniversalAudioPlayer[T <: Song](empty:T) {
     val song = state.map(_.song).distinctUntilChanged
     val history = song.scan(List.empty[T])((acc, i) => i :: acc)
 
+    val playingState: Observable[(T, Boolean)] = song combineLatest isPlaying
+
     //-----------------------------------
     //play when state changes!
     song.subscribe(s => htmlAudio.src = s.url)
