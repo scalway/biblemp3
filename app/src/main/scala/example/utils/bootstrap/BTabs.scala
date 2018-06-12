@@ -4,6 +4,18 @@ import org.scalajs.dom.raw.HTMLElement
 
 import scalatags.JsDom.all._
 
+/** abstraction over Bootstrap Tabs. It allows to create tabs that are always in sync (header and content)
+  *
+  * use it like this:
+  * {{{
+  *   new BTabs {
+  *     tab("test1", div("content1").render)
+  *     tab("test2", div("content2").render)
+  *     ...
+  *   }
+  * }}}
+  *
+  * */
 class BTabs() {
   case class Tab(name:Modifier, view:HTMLElement) {
     val id = if (view.id.nonEmpty) view.id else name.hashCode.toString
