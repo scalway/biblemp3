@@ -9,7 +9,7 @@ import org.scalajs.dom.html.{Button, Div}
 
 import scalatags.JsDom.all._
 
-class AudioPlayerView(val player:AudioPlayer) extends PlayerShortcuts {
+class AudioPlayerView(val player:AudioPlayer) extends PlayerShortcuts(player) {
   val seek = new ProgressSeek(player)
 
   def icon(icon:String, f:() => Any) = div( cls := "amplitude-button", i(cls:=("fa fa-" + icon)), onclick := f)
@@ -82,7 +82,7 @@ class AudioPlayerView(val player:AudioPlayer) extends PlayerShortcuts {
   *.song.first.subscribe(b => hideCover())
 }
 
-class AudioPlayerView2(val player:AudioPlayer) extends PlayerShortcuts {
+class AudioPlayerView2(val player:AudioPlayer) extends PlayerShortcuts(player) {
   val seek = new ProgressSeek(player)
 
   private val playBtn: Button = button("play", onclick := { () => $.play() }).render

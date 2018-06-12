@@ -22,7 +22,7 @@ class UniversalAudioPlayer[T <: Song](empty:T) {
 
   val state = BehaviorSubject[State[T]](State(Seq.empty, -1, empty))
 
-  object data {
+  class Data {
     val position = BehaviorSubject(0.0)
     val duration = BehaviorSubject(0.0)
     val isPlayingSub = BehaviorSubject(false)
@@ -50,12 +50,14 @@ class UniversalAudioPlayer[T <: Song](empty:T) {
     }
   }
 
+  object data extends Data
+
   def isPlayingNow() = {
     htmlAudio.duration > 0 && !htmlAudio.paused
   }
 
-  object actions {
 
+  class Actions {
     def stop() = {
       htmlAudio.pause()
       htmlAudio.currentTime = 0
@@ -114,5 +116,7 @@ class UniversalAudioPlayer[T <: Song](empty:T) {
       res
     }
   }
+
+  object actions extends Actions
 
 }

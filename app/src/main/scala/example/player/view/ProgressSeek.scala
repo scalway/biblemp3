@@ -7,7 +7,7 @@ import org.scalajs.dom.raw.HTMLElement
 import scala.scalajs.js
 import scalatags.JsDom.all._
 
-class ProgressSeek(val player:AudioPlayer) extends PlayerShortcuts {
+class ProgressSeek(val player:AudioPlayer) extends PlayerShortcuts(player) {
 
   private val progress = typedTag[HTMLElement]("progress")
 

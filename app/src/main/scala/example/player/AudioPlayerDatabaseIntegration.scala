@@ -4,7 +4,7 @@ import example.model.{Bible, BibleFile}
 import example.utils.Database
 import example.utils.Implicits._
 
-class AudioPlayerDatabaseIntegration(val player:AudioPlayer) extends PlayerShortcuts {
+class AudioPlayerDatabaseIntegration(val player:AudioPlayer) extends PlayerShortcuts(player) {
   def init(playlist: Seq[BibleFile]) = {
     val lastUrl = Database.lastItemUrl()
     val last = playlist.find(_.url === lastUrl).getOrElse(BibleFile.empty)
