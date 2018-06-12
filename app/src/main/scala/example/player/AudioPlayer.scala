@@ -1,7 +1,6 @@
 package example.player
 
 import example.model.BibleFile
-import sun.audio.AudioPlayer
 
 class AudioPlayer extends UniversalAudioPlayer(BibleFile.empty)
 
