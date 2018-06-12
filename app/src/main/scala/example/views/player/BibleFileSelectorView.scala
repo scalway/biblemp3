@@ -2,7 +2,6 @@ package example.views.player
 
 import example.model.{Bible, BibleFile}
 import example.player.AudioPlayer
-import example.utils.Database
 import example.utils.bootstrap.BTabs
 import example.views.InfoView
 
@@ -38,15 +37,13 @@ class BibleFileSelectorView(audioPlayer:AudioPlayer) {
   def init() = {
     var oldSong = BibleFile.empty
 
-    audioPlayer.data.playingState.subscribe { (t:(BibleFile, Boolean)) =>
+    audioPlayer.data.songAndState.subscribe { (t:(BibleFile, Boolean)) =>
       val current = t._1
 
       allBookFiles.collect { case x if x.isPlaying(oldSong) => x.setPlaying(None) }
       allBookFiles.collect { case x if x.isPlaying(current) => x.setPlaying(Some(t._2)) }
       oldSong = current
     }
-
-    nt.view.classList.add("active")
   }
 
   def setTime(file:BibleFile, time:Double) = {
@@ -56,6 +53,7 @@ class BibleFileSelectorView(audioPlayer:AudioPlayer) {
     allBooks.find(_.containsBook(file)).foreach(_.header.markAsStarted(time > 0))
   }
 
+  /** TODO why we need it? It is just trivial binding */
   def connectWithDatabaseTimes(db:Observable[(BibleFile, Double)]) = {
     db.subscribe { t =>
       val (file, time) = t

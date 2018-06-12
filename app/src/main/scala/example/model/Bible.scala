@@ -6,7 +6,10 @@ import example.utils.Implicits._
 import scala.util.Try
 
 case class Bible(nt:BibleTestament, ot:BibleTestament) {
-  def all = BibleTestament("", ot.files ++ nt.files)
+  def all = new BibleTestament("", ot.files ++ nt.files) {
+    val ntIndex = ot.files.length
+  }
+
 }
 
 object Bible extends Bible(
