@@ -345,11 +345,11 @@ div#single-song-player div.bottom-container div.control-container {
 }
 
 .amplitude-paused {
-  background-image: url('assets/images/play.svg');
+  background-image: url('../images/play.svg');
 }
 
 .amplitude-playing {
-  background-image: url('assets/images/pause.svg');
+  background-image: url('../images/pause.svg');
 }
 div#single-song-player div.bottom-container div.control-container div.meta-container {
   float: left;

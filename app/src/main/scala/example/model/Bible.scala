@@ -36,14 +36,15 @@ case class Book(name:String, short:String, group:String , files:Seq[BibleFile]) 
 }
 
 case class BibleFile(
-                      url:String,
-                      book:String,
-                      shortBook:String,
-                      version:String,
-                      versionPartName:String,
-                      time:String,
-                      bookKind:String
-                    ) extends Song {
+  url:String,
+  book:String,
+  shortBook:String,
+  version:String,
+  versionPartName:String,
+  time:String,
+  bookKind:String
+) extends Song {
+
   def progressOf(time: Double) = Math.max(0, Math.min(1, time / timeReal))
 
   lazy val timeReal:Double = time.split(":") match {
