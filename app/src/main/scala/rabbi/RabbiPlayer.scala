@@ -1,21 +1,14 @@
 package rabbi
 
-import rabbi.model.{Bible, BibleFile}
-import rabbi.player.AudioPlayerDatabaseIntegration
-import rabbi.player.view.AudioPlayerView
-import rabbi.utils.Database
-import rabbi.views.InfoView
 import org.scalajs.dom
-import org.scalajs.dom.html.Div
-import org.scalajs.dom.raw.HTMLElement
-
-import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
-import scalatags.JsDom.all._
+import rabbi.model.Bible
+import rabbi.utils.Database
 import rabbi.utils.Implicits._
-import org.scalajs.dom.Event
 
-@JSExportTopLevel("example.Hello")
-object Hello {
+import scala.scalajs.js.annotation.JSExport
+
+@JSExport
+object RabbiPlayer {
 
   def hello(name:String) = {
     val msg = s"Hello, $name!"
