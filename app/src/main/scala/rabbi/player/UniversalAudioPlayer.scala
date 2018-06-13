@@ -2,6 +2,7 @@ package rabbi.player
 
 import org.scalajs.dom
 import org.scalajs.dom.Event
+import rabbi.player.UniversalAudioPlayer.{Actions, Data}
 import rxscalajs.Observable
 import rxscalajs.subjects.BehaviorSubject
 
@@ -22,7 +23,7 @@ class UniversalAudioPlayer[T <: Song](empty:T) {
 
   val state = BehaviorSubject[State[T]](State(Seq.empty, -1, empty))
 
-  class Data {
+  val data = new Data[Observable, T] {
     val position = BehaviorSubject(0.0)
     val duration = BehaviorSubject(0.0)
     val isPlayingSub = BehaviorSubject(false)
@@ -53,18 +54,13 @@ class UniversalAudioPlayer[T <: Song](empty:T) {
     }
   }
 
-  object data extends Data
-
   def isPlayingNow() = {
     htmlAudio.duration > 0 && !htmlAudio.paused
   }
 
 
-  class Actions {
-    def stop() = {
-      htmlAudio.pause()
-      htmlAudio.currentTime = 0
-    }
+  val actions = new Actions[T] {
+    override def getState(): State[T] = state.getValue()
 
     def seek(time: Double) = {
       htmlAudio.currentTime = Math.max(0, htmlAudio.currentTime + time)
@@ -77,37 +73,8 @@ class UniversalAudioPlayer[T <: Song](empty:T) {
     def pause() = htmlAudio.pause()
     def toggle():Unit = if(htmlAudio.paused) play() else pause()
 
-    def setSong(s:T, autoplay:Boolean = true): Unit = {
-      val curr = state.getValue()
-      setSongInPlaylist(curr.playlist.indexWhere(s === _), autoplay)
-    }
-
-    def toggle(s:T, playIfNew:Boolean = true, forcePositionIfNew:Double = 0):Unit = {
-      val last = state.getValue()
-      dom.console.warn("toggle:" + last.song)
-      if(last.song.url === s.url) {
-        toggle()
-      } else {
-        setSongInPlaylist(last.playlist.indexWhere(s === _), playIfNew).subscribe { i =>
-          setPosition(forcePositionIfNew)
-        }
-      }
-    }
-
     def setPlaylist(playlist:Seq[T], selectedPredicate:T => Boolean) = state.next(State(playlist, playlist.indexWhere(selectedPredicate), empty))
     def setPlaylist(playlist:Seq[T], playIndex:Int) = state.next(State(playlist, playIndex, empty))
-
-    def prev() = {
-      val s = state.getValue()
-      setSongInPlaylist(0 max (s.songIndex - 1))
-    }
-
-    def next() = {
-      val s = state.getValue()
-      setSongInPlaylist(
-        (s.songIndex + 1) % s.playlist.length
-      )
-    }
 
     def setSongInPlaylist(playIndex:Int, forcePlay:Boolean = false): Observable[State[T]] = {
 
@@ -119,7 +86,67 @@ class UniversalAudioPlayer[T <: Song](empty:T) {
       res
     }
   }
+}
 
-  object actions extends Actions
+object UniversalAudioPlayer {
 
+  trait Data[F[_], T] {
+    val position:F[Double]
+    val duration:F[Double]
+    val isPlaying:F[Boolean]
+    val progress:F[Double]
+    val playlist:F[Seq[T]]
+    val songIndex:F[Int]
+    val song:F[T]
+    val history:F[Seq[T]]
+    val songAndState:F[(T, Boolean)]
+    val songAndPosition:F[(T, Double)]
+  }
+
+  trait Actions[T] {
+    def getState():State[T]
+    def seek(time: Double):Unit
+    def setPosition(d: Double):Unit
+    def setPositionPercentage(progress: Double):Unit
+    def play():Unit
+    def pause():Unit
+    def toggle():Unit
+    def setPlaylist(playlist:Seq[T], selectedPredicate:T => Boolean):Unit
+    def setPlaylist(playlist:Seq[T], playIndex:Int):Unit
+    def setSongInPlaylist(playIndex:Int, forcePlay:Boolean = false): Observable[State[T]]
+
+    def toggle(s:T, playIfNew:Boolean = true, forcePositionIfNew:Double = 0):Unit = {
+      val last = getState()
+      dom.console.warn("toggle:" + last.song)
+      if(last.song === s) {
+        toggle()
+      } else {
+        setSongInPlaylist(last.playlist.indexWhere(s === _), playIfNew).subscribe { i =>
+          setPosition(forcePositionIfNew)
+        }
+      }
+    }
+
+    def setSong(s:T, autoplay:Boolean = true): Unit = {
+      val curr = getState()
+      setSongInPlaylist(curr.playlist.indexWhere(s === _), autoplay)
+    }
+
+    def stop():Unit = {
+      pause()
+      setPosition(0)
+    }
+
+    def prev():Unit = {
+      val s = getState()
+      setSongInPlaylist(0 max (s.songIndex - 1))
+    }
+
+    def next():Unit = {
+      val s = getState()
+      setSongInPlaylist(
+        (s.songIndex + 1) % s.playlist.length
+      )
+    }
+  }
 }

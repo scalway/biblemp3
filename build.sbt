@@ -26,7 +26,7 @@ lazy val macros = project
       "com.lihaoyi"        %%% "upickle" % "0.6.5",
       "be.doeraene"        %%% "scalajs-jquery" % "0.9.1",
       "com.github.lukajcb" %%% "rxscala-js" % "0.15.0",
-      "in.nvilla"          %%% "monadic-rx" % "0.4.0-RC1"
+      "in.nvilla"          %%% "monadic-rx-cats" % "0.4.0-RC1"
     )
   )
 

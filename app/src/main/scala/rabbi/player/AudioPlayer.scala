@@ -1,6 +1,7 @@
 package rabbi.player
 
 import rabbi.model.BibleFile
+import rxscalajs.Observable
 
 class AudioPlayer extends UniversalAudioPlayer(BibleFile.empty)
 
@@ -16,5 +17,4 @@ class Shortcuts[T,E](data:T, actions:E) {
   val $ = actions
 }
 
-class PlayerShortcuts(player:AudioPlayer)
-  extends Shortcuts[AudioPlayer#Data, AudioPlayer#Actions](player.data, player.actions)
+class PlayerShortcuts(player:AudioPlayer) extends Shortcuts(player.data, player.actions)
