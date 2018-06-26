@@ -22,11 +22,12 @@ lazy val macros = project
       "com.lihaoyi"        %%% "utest" % "0.6.3" % "test",
       "com.lihaoyi"        %%% "scalatags" % "0.6.7",
       "com.lihaoyi"        %%% "sourcecode" % "0.1.3",
-      "com.propensive"     %%% "magnolia" % "0.7.1",
+      //"com.propensive"     %%% "magnolia" % "0.7.1",
       "com.lihaoyi"        %%% "upickle" % "0.6.5",
       "be.doeraene"        %%% "scalajs-jquery" % "0.9.1",
       "com.github.lukajcb" %%% "rxscala-js" % "0.15.0",
-      "in.nvilla"          %%% "monadic-rx-cats" % "0.4.0-RC1"
+      "in.nvilla"          %%% "monadic-rx-cats" % "0.4.0-RC1",
+      "io.circe"           %%% "circe-magnolia-derivation" % "0.1.1"
     )
   )
 

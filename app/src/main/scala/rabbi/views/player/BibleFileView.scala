@@ -22,7 +22,6 @@ class BibleFileView(val file:BibleFile, player: rabbi.player.AudioPlayer) {
   def setProgress(pr:Double) = {
     view.style.setProperty("--proc", 100 * pr  + "%")
   }
-
   val view: Div = {
     div(cls :="chapter",
       button(cls := "btnPlay", icon),

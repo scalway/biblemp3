@@ -12,6 +12,10 @@ import org.scalajs.dom.raw.HTMLElement
 
 import scala.util.Random
 import scalatags.JsDom
+
+import cats.instances.all._
+import cats.syntax.all._
+
 @JSExport
 class MonadicRxTest {
   val a = Var(11)
@@ -21,7 +25,7 @@ class MonadicRxTest {
     aa + bb
   }
 
-  val d = (a.rx, b.rx, c).map3 { (a,b,c) =>
+  val d = (a.rx, b.rx, c).mapN { (a,b,c) =>
     a + b
   }
 
@@ -56,7 +60,7 @@ class MonadicRxTest {
     }
 
     val render: Div = {
-      (a.rx, b.rx, d).map3 { (a1, b1, d1) =>
+      (a.rx, b.rx, d).mapN { (a1, b1, d1) =>
 
         div(
           div( cls:= "well", a1,

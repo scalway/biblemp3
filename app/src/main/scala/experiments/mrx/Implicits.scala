@@ -1,21 +1,23 @@
 package experiments.mrx
 
-import cats.syntax.TupleSyntax
+import cats.syntax.TupleSemigroupalSyntax
+import cats.syntax.TupleParallelSyntax
 import mhtml.{Rx, Var}
 import org.scalajs.dom.Element
 import org.scalajs.dom.raw.HTMLElement
 
 import scalatags.JsDom.all.{Modifier, div, span}
 
-trait MonadicRxCatsSupport {
-  import mhtml.implicits.cats
-  @inline implicit def mhtmlRxMonadIntstance = cats.mhtmlRxMonadIntstance
-  @inline implicit def mhtmlRxSemigroupIntstance[A] = cats.mhtmlRxSemigroupIntstance[A]
-  @inline implicit def mhtmlVarSyntaxCartesian[A](fa:Var[A]) = cats.mhtmlVarSyntaxCartesian(fa)
-  @inline implicit def mhtmlVarSyntaxSemigroup[A](fb:Var[A]) = cats.mhtmlVarSyntaxSemigroup(fb)
-}
+//trait MonadicRxCatsSupport {
+//  import mhtml.implicits.cats
+//  @inline implicit def mhtmlRxMonadIntstance = cats.mhtmlRxMonadIntstance
+//  @inline implicit def mhtmlRxSemigroupIntstance[A] = cats.mhtmlRxSemigroupIntstance[A]
+//  @inline implicit def mhtmlVarSyntaxCartesian[A](fa:Var[A]) = cats.mhtmlVarSyntaxCartesian(fa)
+//  @inline implicit def mhtmlVarSyntaxSemigroup[A](fb:Var[A]) = cats.mhtmlVarSyntaxSemigroup(fb)
+//}
 
-object Implicits extends TupleSyntax with MonadicRxCatsSupport {
+//object Implicits extends TupleSemigroupalSyntax with TupleParallelSyntax with MonadicRxCatsSupport {
+object Implicits extends CatsSupport {
   implicit class VarOps[T](val v:Rx[T]) {
     //just cast Var to Rx. We need it with e.g. cats tuple syntax
     //that'll work only for Rx not for Vars
