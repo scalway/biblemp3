@@ -22,6 +22,7 @@ class MagnoliaUpickleDeriviationTest {
   @JSExport
   def main(): Unit = {
     import rabbi.UpApi._
+    import rabbi.UpApi.derive._
 
 //    implicit lazy val msgRW = implicitly[ReadWriter[Msg]]
     implicit lazy val envelopeRW = implicitly[ReadWriter[Envelope]]
