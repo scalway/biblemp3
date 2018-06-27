@@ -106,6 +106,7 @@ trait UpickleDerivationMixin { self:Api =>
     val api:self.type = self
     type Typeclass[T] = api.Typeclass[T]
   }
+
   import ds._
 
 
@@ -118,7 +119,14 @@ object DefaultUpickleMW extends UpickleDerivationW(upickle.default)
 object DefaultUpickleMR extends UpickleDerivationR(upickle.default)
 object DefaultUpickleM  extends UpickleDerivation (upickle.default)
 
-class UpApi extends AttributeTagged with UpickleDerivationMixin {}
-object UpApi extends UpApi
+object UpApi extends AttributeTagged with UpickleDerivationMixin {
+
+}
+
+class UpApiAuto extends AttributeTagged {
+  val derive = new UpickleDerivation(this)
+}
+
+object UpApiAuto extends UpApiAuto
 
 object DefaultUpickleFull  extends UpickleDerivation (upickle.default)
