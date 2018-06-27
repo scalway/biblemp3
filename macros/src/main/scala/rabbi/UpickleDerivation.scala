@@ -2,7 +2,7 @@ package rabbi
 
 import magnolia._
 import ujson.{ObjVisitor, Visitor}
-import upickle.{Api, AttributeTagged, core}
+import upickle.{Api, AttributeTagged}
 
 import scala.language.experimental.macros
 import scala.reflect.ClassTag
@@ -11,12 +11,16 @@ trait UpickleSupportCommon {
   type Typeclass[T]
   type CC[T] = CaseClass[Typeclass, T]
   type ST[T] = SealedTrait[Typeclass, T]
-  protected val api:Api
+  protected val upickleApi0:Api
 
   private def key_@(arg:Seq[Any]) = arg.collectFirst {
     case x:upickle.key => x.s
   }
 
+  /**
+    * TODO make all methods protected! We cannot do that due to UpickleDerivationMixin but
+    * it is deprecated and probably would be deleted in near future!
+    */
   def ccName[T](ctx:CC[T]) = {
     key_@(ctx.annotations).getOrElse(ctx.typeName.full)
   }
@@ -29,14 +33,14 @@ trait UpickleSupportCommon {
 }
 
 trait UpickleSupportR extends UpickleSupportCommon {
-  import api._
+  import upickleApi0._
   type Typeclass[T] <: Reader[T]
 
-  def caseRTagged[T](ctx:CC[T]) = {
-    new TaggedReader.Leaf[T](ccName[T](ctx), caseR(ctx))
+  def deriveCaseRTagged[T](ctx:CC[T]) = {
+    new TaggedReader.Leaf[T](ccName[T](ctx), deriveCaseR(ctx))
   }
 
-  def caseR[T](ctx:CC[T]) = JsObjR.map[T] { r =>
+  def deriveCaseR[T](ctx:CC[T]) = JsObjR.map[T] { r =>
     ctx.construct(p => {
       r.value.get(paramLabel(p)) match {
         case Some(x) => readJs(x)(p.typeclass)
@@ -47,14 +51,14 @@ trait UpickleSupportR extends UpickleSupportCommon {
 }
 
 trait UpickleSupportW extends UpickleSupportCommon {
-  import api._
+  import upickleApi0._
   type Typeclass[T] <: Writer[T]
 
-  def caseWTagged[T:ClassTag](ctx:CC[T]) = {
-    new TaggedWriter.Leaf[T](implicitly, ccName[T](ctx), caseW(ctx))
+  def deriveCaseWTagged[T:ClassTag](ctx:CC[T]) = {
+    new TaggedWriter.Leaf[T](implicitly, ccName[T](ctx), deriveCaseW(ctx))
   }
 
-  def caseW[T](ctx:CC[T]) = new CaseW[T] {
+  def deriveCaseW[T](ctx:CC[T]) = new CaseW[T] {
     override def writeToObject[R](ww: ObjVisitor[_, R], v: T): Unit = {
       ctx.parameters.zipWithIndex.foreach { case (arg, i) =>
         val argWriter = arg.typeclass
@@ -74,42 +78,43 @@ trait UpickleSupportW extends UpickleSupportCommon {
   }
 }
 
-class UpickleDerivationW(val api:Api) extends UpickleSupportW {
-  import api._
+class UpickleDerivationW[A <: Api](override val upickleApi0:Api) extends UpickleSupportW {
+  import upickleApi0._
   type Typeclass[T] = Writer[T]
-  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = caseWTagged(ctx)
+  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = deriveCaseWTagged(ctx)
   def dispatch[T](ctx: ST[T]): Typeclass[T] = Writer.merge[T](dispatch0(ctx) :_*)
   implicit def genW[T]: Typeclass[T] = macro Magnolia.gen[T]
 }
 
-class UpickleDerivationR[A <: Api](val api:A) extends UpickleSupportR {
-  import api._
+class UpickleDerivationR[A <: Api](override val upickleApi0:A) extends UpickleSupportR {
+  import upickleApi0._
   type Typeclass[T] = Reader[T]
-  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = caseRTagged(ctx)
+  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = deriveCaseRTagged(ctx)
   def dispatch[T](ctx: ST[T]): Typeclass[T] = Reader.merge[T](dispatch0(ctx) :_*)
   implicit def genR[T]: Typeclass[T] = macro Magnolia.gen[T]
 }
 
-class UpickleDerivation[A <: Api](val api:A) extends UpickleSupportW with UpickleSupportR {
-  import api._
+class UpickleDerivation[A <: Api](override val upickleApi0:A) extends UpickleSupportW with UpickleSupportR {
+  import upickleApi0._
   type Typeclass[T] = ReadWriter[T]
-  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = ReadWriter.join[T](caseRTagged(ctx), caseWTagged(ctx))
+  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = ReadWriter.join[T](deriveCaseRTagged(ctx), deriveCaseWTagged(ctx))
   def dispatch[T](ctx: ST[T]): Typeclass[T] =  ReadWriter.merge[T](dispatch0(ctx) :_*)
   implicit def gen[T]: Typeclass[T] = macro Magnolia.gen[T]
 }
 
-@deprecated("use with caution!", "0.1")
+@deprecated(
+  """use with caution! It is only reason why we have public fields in Support classes and they leaks with import.""".stripMargin, "0.1")
 trait UpickleDerivationMixin { self:Api =>
   type Typeclass[T] = ReadWriter[T]
 
   protected val deriveSupport = new UpickleSupportW with UpickleSupportR {
-    val api:self.type = self
-    type Typeclass[T] = api.Typeclass[T]
+    val upickleApi0:self.type = self
+    type Typeclass[T] = upickleApi0.Typeclass[T]
   }
 
   import deriveSupport._
 
-  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = ReadWriter.join[T](caseRTagged(ctx), caseWTagged(ctx))
+  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = ReadWriter.join[T](deriveCaseRTagged(ctx), deriveCaseWTagged(ctx))
   def dispatch[T](ctx: ST[T]): Typeclass[T] = ReadWriter.merge[T](dispatch0(ctx) :_*)
   implicit def gen[T]: Typeclass[T] = macro Magnolia.gen[T]
 }
