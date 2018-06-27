@@ -1,98 +1,124 @@
 package rabbi
 
 import magnolia._
-import shapeless.Lazy
-import ujson.{Js, ObjVisitor, Visitor}
-import upickle.default._
+import ujson.{ObjVisitor, Visitor}
+import upickle.core.Types
+import upickle.{Api, AttributeTagged, core}
 
 import scala.language.experimental.macros
 import scala.reflect.ClassTag
 
-object UpickleDerivation {
-  type Typeclass[T] = ReadWriter[T]
+trait UpickleSupportCommon[A <: Api] {
+  type Typeclass[T]
+  type CC[T] = CaseClass[Typeclass, T]
+  type ST[T] = SealedTrait[Typeclass, T]
+  protected val api:A
 
+  private def key_@(arg:Seq[Any]) = arg.collectFirst {
+    case x:upickle.key => x.s
+  }
 
-  def combine[T:ClassTag](ctx: CaseClass[ReadWriter, T]): ReadWriter[T] = {
+  def ccName[T](ctx:CC[T]) = {
+    key_@(ctx.annotations).getOrElse(ctx.typeName.full)
+  }
 
-    val CaseWriterT = new CaseW[T] {
-      override def writeToObject[R](ww: ObjVisitor[_, R], v: T): Unit = ctx.parameters.zipWithIndex.foreach { case (arg, i) =>
-        ww.visitKey(objectAttributeKeyWriteMap(arg.label), -1)
-        val w = arg.typeclass
-        ww.visitValue(
-          w.write(
-            ww.subVisitor.asInstanceOf[Visitor[Any, Nothing]],
-            arg.dereference(v)
-          ),
-          -1
-        )
+  def paramLabel[F[_], E](arg:Param[F, E]) = {
+    key_@(arg.annotations).getOrElse(arg.label)
+  }
+
+  def dispatch0[T](ctx: ST[T]) = ctx.subtypes.map(_.typeclass)
+}
+
+trait UpickleSupportR[A <: Api] extends UpickleSupportCommon[A] {
+  import api._
+  type Typeclass[T] <: Reader[T]
+
+  def caseRTagged[T](ctx:CC[T]) = {
+    new TaggedReader.Leaf[T](ccName[T](ctx), caseR(ctx))
+  }
+
+  def caseR[T](ctx:CC[T]) = JsObjR.map[T] { r =>
+    ctx.construct(p => {
+      r.value.get(paramLabel(p)) match {
+        case Some(x) => readJs(x)(p.typeclass)
+        case None => p.default.get
+      }
+    })
+  }
+}
+
+trait UpickleSupportW[A <: Api] extends UpickleSupportCommon[A] {
+  import api._
+  type Typeclass[T] <: Writer[T]
+
+  def caseWTagged[T:ClassTag](ctx:CC[T]) = {
+    new TaggedWriter.Leaf[T](implicitly, ccName[T](ctx), caseW(ctx))
+  }
+
+  def caseW[T](ctx:CC[T]) = new CaseW[T] {
+    override def writeToObject[R](ww: ObjVisitor[_, R], v: T): Unit = {
+      ctx.parameters.zipWithIndex.foreach { case (arg, i) =>
+        val argWriter = arg.typeclass
+        val value = arg.dereference(v)
+        if (!arg.default.contains(value)) {
+          ww.visitKey(objectAttributeKeyWriteMap(paramLabel(arg)), -1)
+          ww.visitValue(
+            argWriter.write(
+              ww.subVisitor.asInstanceOf[Visitor[Any, Nothing]],
+              value
+            ),
+            -1
+          )
+        }
       }
     }
-
-    ReadWriter.join[T](
-      new TaggedReader.Leaf[T](ctx.typeName.full, JsObjR.map[T] { r =>
-        ctx.construct(p => readJs(r.value(p.label))(p.typeclass))
-      }),
-
-      new TaggedWriter.Leaf[T](implicitly, ctx.typeName.full, CaseWriterT)
-    )
   }
+}
 
-  def dispatch[T](ctx: SealedTrait[ReadWriter, T]): ReadWriter[T] =  {
-    ctx.subtypes.foreach(s => println(s.typeName))
-    val col = ctx.subtypes.map(_.typeclass)
-    ReadWriter.merge[T](col :_*)
-  }
+class UpickleDerivationW[A <: Api](val api:A) extends UpickleSupportW[A] {
+  import api._
+  type Typeclass[T] = Writer[T]
+  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = caseWTagged(ctx)
+  def dispatch[T](ctx: ST[T]): Typeclass[T] = Writer.merge[T](dispatch0(ctx) :_*)
+  implicit def genW[T]: Typeclass[T] = macro Magnolia.gen[T]
+}
 
+class UpickleDerivationR[A <: Api](val api:A) extends UpickleSupportR[A] {
+  import api._
+  type Typeclass[T] = Reader[T]
+  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = caseRTagged(ctx)
+  def dispatch[T](ctx: ST[T]): Typeclass[T] = Reader.merge[T](dispatch0(ctx) :_*)
+  implicit def genR[T]: Typeclass[T] = macro Magnolia.gen[T]
+}
+
+class UpickleDerivation[A <: Api](val api:A) extends UpickleSupportW[A] with UpickleSupportR[A] {
+  import api._
+  type Typeclass[T] = ReadWriter[T]
+  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = ReadWriter.join[T](caseRTagged(ctx), caseWTagged(ctx))
+  def dispatch[T](ctx: ST[T]): Typeclass[T] =  ReadWriter.merge[T](dispatch0(ctx) :_*)
   implicit def gen[T]: Typeclass[T] = macro Magnolia.gen[T]
 }
 
-object UpickleDerivationR {
-  type Typeclass[T] = Reader[T]
+trait UpickleDerivationMixin { self:Api =>
+  type Typeclass[T] = ReadWriter[T]
 
-  def combine[T:ClassTag](ctx: CaseClass[Reader, T]): Reader[T] = {
-    new TaggedReader.Leaf[T](ctx.typeName.full, JsObjR.map[T] { r =>
-      ctx.construct(p => readJs(r.value(p.label))(p.typeclass))
-    })
+  protected val ds = new UpickleSupportW[Api] with UpickleSupportR[Api] {
+    val api:self.type = self
+    type Typeclass[T] = api.Typeclass[T]
   }
+  import ds._
 
-  def dispatch[T](ctx: SealedTrait[Writer, T]): Writer[T] =  {
-    ctx.subtypes.foreach(s => println(s.typeName))
-    val col = ctx.subtypes.map(_.typeclass)
-    Writer.merge[T](col :_*)
-  }
 
-  implicit def gen[T]: Writer[T] = macro Magnolia.gen[T]
+  def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = ReadWriter.join[T](caseRTagged(ctx), caseWTagged(ctx))
+  def dispatch[T](ctx: ST[T]): Typeclass[T] = ReadWriter.merge[T](dispatch0(ctx) :_*)
+  implicit def gen[T]: Typeclass[T] = macro Magnolia.gen[T]
 }
 
+object DefaultUpickleMW extends UpickleDerivationW(upickle.default)
+object DefaultUpickleMR extends UpickleDerivationR(upickle.default)
+object DefaultUpickleM  extends UpickleDerivation (upickle.default)
 
-object UpickleDerivationW {
-  type Typeclass[T] = Writer[T]
+class UpApi extends AttributeTagged with UpickleDerivationMixin {}
+object UpApi extends UpApi
 
-  def combine[T:ClassTag](ctx: CaseClass[Writer, T]): Writer[T] = {
-
-    val CaseWriterT = new CaseW[T] {
-      override def writeToObject[R](ww: ObjVisitor[_, R], v: T): Unit = ctx.parameters.zipWithIndex.foreach { case (arg, i) =>
-        ww.visitKey(objectAttributeKeyWriteMap(arg.label), -1)
-        val w = arg.typeclass
-        ww.visitValue(
-          w.write(
-            ww.subVisitor.asInstanceOf[Visitor[Any, Nothing]],
-            arg.dereference(v)
-          ),
-          -1
-        )
-      }
-    }
-
-    new TaggedWriter.Leaf[T](implicitly, ctx.typeName.full, CaseWriterT)
-  }
-
-  def dispatch[T](ctx: SealedTrait[Writer, T]): Writer[T] =  {
-    ctx.subtypes.foreach(s => println(s.typeName))
-    val col = ctx.subtypes.map(_.typeclass)
-    Writer.merge[T](col :_*)
-  }
-
-  implicit def gen[T]: Writer[T] = macro Magnolia.gen[T]
-}
-
+object DefaultUpickleFull  extends UpickleDerivation (upickle.default)
