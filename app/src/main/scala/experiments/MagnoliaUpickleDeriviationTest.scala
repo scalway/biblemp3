@@ -1,6 +1,5 @@
 package experiments
 
-import io.circe._
 import upickle.key
 
 import scala.scalajs.js.annotation.JSExport
@@ -22,10 +21,10 @@ class MagnoliaUpickleDeriviationTest {
   @JSExport
   def main(): Unit = {
     import rabbi.UpApi._
-    import rabbi.UpApi.derive._
+    import rabbi.UpApi.derive.readWriterOf
 
-    implicit lazy val msgRW = implicitly[ReadWriter[Msg]]
-    implicit lazy val envelopeRW = implicitly[ReadWriter[Envelope]]
+    //implicit lazy val msgRW = readWriterOf[Msg]
+    implicit lazy val envelopeRW: ReadWriter[Envelope] = readWriterOf[Envelope]
 
 
     val obj = Envelope(Multi(List(Hello(Some("test1")),ByeBye(), Hello(), ByeBye(Map("Dupa" -> 2)))))

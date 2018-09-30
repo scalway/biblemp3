@@ -11,6 +11,9 @@ trait UpickleSupportCommon {
   type Typeclass[T]
   type CC[T] = CaseClass[Typeclass, T]
   type ST[T] = SealedTrait[Typeclass, T]
+
+  @deprecatedOverriding("dont use it from your code. It is intendet to be used only by " +
+    "magnolia and is visible 4 u just because i couldn't figure out how to hide it successfully.", "0.1")
   protected val upickleApi0:Api
 
   private def key_@(arg:Seq[Any]) = arg.collectFirst {
@@ -78,28 +81,31 @@ trait UpickleSupportW extends UpickleSupportCommon {
   }
 }
 
-class UpickleDerivationW[A <: Api](override val upickleApi0:Api) extends UpickleSupportW {
+class UpickleDerivationW[A <: Api](@deprecated("1") override val upickleApi0:Api) extends UpickleSupportW {
   import upickleApi0._
   type Typeclass[T] = Writer[T]
   def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = deriveCaseWTagged(ctx)
   def dispatch[T](ctx: ST[T]): Typeclass[T] = Writer.merge[T](dispatch0(ctx) :_*)
-  implicit def genW[T]: Typeclass[T] = macro Magnolia.gen[T]
+  implicit def autoWriter[T]: Typeclass[T] = macro Magnolia.gen[T]
+  def writerOf[T]: Typeclass[T] = macro Magnolia.gen[T]
 }
 
-class UpickleDerivationR[A <: Api](override val upickleApi0:A) extends UpickleSupportR {
+class UpickleDerivationR[A <: Api](@deprecated("1") override val upickleApi0:A) extends UpickleSupportR {
   import upickleApi0._
   type Typeclass[T] = Reader[T]
   def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = deriveCaseRTagged(ctx)
   def dispatch[T](ctx: ST[T]): Typeclass[T] = Reader.merge[T](dispatch0(ctx) :_*)
-  implicit def genR[T]: Typeclass[T] = macro Magnolia.gen[T]
+  implicit def autoReader[T]: Typeclass[T] = macro Magnolia.gen[T]
+  def readerOf[T]: Typeclass[T] = macro Magnolia.gen[T]
 }
 
-class UpickleDerivation[A <: Api](override val upickleApi0:A) extends UpickleSupportW with UpickleSupportR {
+class UpickleDerivation[A <: Api](@deprecated("1") override val upickleApi0:A) extends UpickleSupportW with UpickleSupportR {
   import upickleApi0._
   type Typeclass[T] = ReadWriter[T]
   def combine[T:ClassTag](ctx: CC[T]): Typeclass[T] = ReadWriter.join[T](deriveCaseRTagged(ctx), deriveCaseWTagged(ctx))
   def dispatch[T](ctx: ST[T]): Typeclass[T] =  ReadWriter.merge[T](dispatch0(ctx) :_*)
-  implicit def gen[T]: Typeclass[T] = macro Magnolia.gen[T]
+  implicit def autoReadWriter[T]: Typeclass[T] = macro Magnolia.gen[T]
+  def readWriterOf[T]: Typeclass[T] = macro Magnolia.gen[T]
 }
 
 @deprecated(
@@ -129,7 +135,7 @@ trait UpickleDerivationMixin { self:Api =>
   *
   * {{{
   *   import UpApi._
-  *   import UpApi.derive._
+  *   import UpApi.derive.autoReadWriter
   *
   *   implicit val msgRW = implicitly[ReadWriter[Message]]
   * }}}
@@ -140,32 +146,70 @@ trait UpickleDerivationMixin { self:Api =>
   *   implicit lazy val msgRW = implicitly[ReadWriter[Message]]
   * }}}
   *
+  * If you are not interested in automatic deriviation then import upickleDerive method
+  *
+  * {{{
+  *   import UpApi._
+  *   import UpApi.derive.readWriterOf
+  *   implicit val msgRW = readWriterOf[Message]
+  * }}}
   * */
 object UpApi extends AttributeTagged {
   val derive = new UpickleDerivation(this)
 }
+
+import UpApi._
+import UpApi.derive.autoReadWriter
+implicit val msgRW = implicitly[ReadWriter[Message]]
+
+//if `Message` is recursive in more complicated way use lazy val instead!
+implicit lazy val msgRW = implicitly[ReadWriter[Message]]
+
+// If you are not interested in automatic deriviation then import other method
+import UpApi._
+import UpApi.derive.readWriterOf
+implicit val msgRW = readWriterOf[Message]
 
 /**
   * If you need only Reader or Writer You can create just instance that creates it.
   *
   * {{{
   *   import UpApi._
-  *   import UpApi.deriveW._
-  *
+  *   import UpApi.deriveW.autoReadWriter
   *   implicit val msgW = implicitly[Writer[Message]]
   * }}}
+  *
+  * or more explicitly:
+  *
+  * {{{
+  *   import UpApi._
+  *   import UpApi.deriveW.writerOf
+  *   implicit val msgW = writerOf[Message]
+  * }}}
   * */
+
+//If you need only Reader or Writer You can create just instance that creates it.
 object UpApi2 extends AttributeTagged {
   val deriveW = new UpickleDerivationW(this)
   val deriveR = new UpickleDerivationR(this)
 }
+
+import UpApi2._
+import UpApi2.deriveW.autoWriter
+implicit val msgW = implicitly[Writer[Message]]
+
+//or more explicitly:
+import UpApi2._
+import UpApi2.deriveW.writerOf
+implicit val msgW = writerOf[Message]
+
 
 /**
   * You can also simply create derivation for existing api and use it with companion to it
   *
   * {{{
   *   import upickle.default._
-  *   import UpDerive._
+  *   import UpDerive.autoReadWriterOf
   *
   *   implicit val msgRW = implicitly[ReadWriter[Message]]
   * }}}
